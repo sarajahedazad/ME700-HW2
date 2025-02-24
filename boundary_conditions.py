@@ -1,6 +1,9 @@
 import numpy as np
 import geometry as geom
 
+# Things to consider in the future:
+# What if one of the types of boundaries does nor exist
+
 class OverDefinedError( Exception ):
     pass
 
