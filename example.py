@@ -3,6 +3,7 @@ import geometry as geom
 from math_utils import *
 from boundary_conditions import *
 from direct_stiffness_method import *
+from solver import *
 
 #--------defining the structure----------
 points = np.array([ [0, 0, 0], [0, 20, 0], [20, 15, 0] ])
@@ -37,12 +38,12 @@ bcs.get_momentum_bounds( BCs_momentum_points, BCs_momentum_values )
 
 bcs.set_up_bounds()
 
-#------------Build Global Stiffness Matrix-----
+#------------Build the Global Stiffness Matrix-----
 
 smat = StiffnessMat( frame )
 K = smat.get_stiffmat_global()
 
 #-----------Solving for unknowns----------
+X, F = solve_stiffness_system( K, bcs )
 
-'''To be implemented later'''
 
