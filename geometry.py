@@ -11,6 +11,7 @@ class Point:
         self.x = x
         self.y = y
         self.z = z
+        self.coords = np.array([self.x, self.y, self.z])
 
 class Element:
     def __init__(self, p0, p1, E, nu, A, Iy, Iz, J, v_temp = None):
@@ -25,7 +26,8 @@ class Element:
         self.J = J
         self.v_temp = v_temp
     def calc_connection_length(self):
-        length = np.sqrt( ( p0.x - p1.x )**2 + ( p0.y - p1.y )**2 + ( p0.z - p1.z )**2  )
+        length = np.sqrt( ( self.p0.x - self.p1.x )**2 + ( self.p0.y - self.p1.y )**2 + ( self.p0.z - self.p1.z )**2  )
+        return length
 
 class Frame:
     def __init__(self):
@@ -96,7 +98,7 @@ class Frame:
 
         print( 'Your frame is good to go!' )   
 
-    def build_frame_directly( self, points, connectivities, E_array, nu_array, A_array, Iy_array, Iz_array, J_array, v_temp_array = None ):
+    def generate_frame_directly( self, points, connectivities, E_array, nu_array, A_array, Iy_array, Iz_array, J_array, v_temp_array = None ):
         self.points = points
         self.connectivities = connectivities
         self.E_array = E_array
@@ -108,3 +110,6 @@ class Frame:
         self.v_temp_array = v_temp_array
 
         self.L_array = self.calc_all_connections_lengths()
+
+        
+
