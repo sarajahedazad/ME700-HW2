@@ -1,6 +1,5 @@
 import numpy as np
 
-
 # Note: ChatGPT was used for this function
 
 def solve_stiffness_system(K, bcs):
