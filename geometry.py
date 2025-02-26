@@ -96,7 +96,7 @@ class Frame:
 
         print( 'Your frame is good to go!' )   
 
-    def generate_frame_directly( self, points, connectivities, E_array, nu_array, A_array, Iy_array, Iz_array, J_array, v_temp_array = None ):
+    def build_frame_directly( self, points, connectivities, E_array, nu_array, A_array, Iy_array, Iz_array, J_array, v_temp_array = None ):
         self.points = points
         self.connectivities = connectivities
         self.E_array = E_array
