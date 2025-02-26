@@ -1,9 +1,6 @@
 import numpy as np
 import geometry as geom
 
-# Things to consider in the future:
-# What if one of the types of boundaries does nor exist
-
 class OverDefinedError( Exception ):
     pass
 
@@ -11,96 +8,163 @@ class UnderDefinedError( Exception ):
     pass
 
 
-def find_point_idx( frame_obj, point ):
-    match = np.where((frame_obj.points == point).all(axis=1))[0].item()
-    return match
-
-def find_points_indices( frame_obj, points_arr ):
-    points_indices_lst = []
-    for point in points_arr:
-        match = find_point_idx( frame_obj, point )
-        points_indices_lst.append( match )
-    return np.array( points_indices_lst )
-
 class BoundaryConditions:
     def __init__(self, frame_obj):
         self.frame = frame_obj
         self.n_points = self.frame.points.shape[0]
-        self.n_connectivities = self.frame.connectivity.shape[0]
+        self.n_connectivities = self.frame.connectivities.shape[0]
         self.n_DoFs = self.n_points * 6
-        
+
         # disp bounds
-        self.BCs_disp_points = None
-        self.BCs_disp_points_idx = None
-        self.BCs_disp_values = None
+        self.BCs_disp_indices = []
+        self.BCs_disp_values = []
 
         # rotation bounds
-        self.BCs_rot_points = None
-        self.BCs_rot_points_idx = None
-        self.BCs_rot_values = None
+        self.BCs_rot_indices = []
+        self.BCs_rot_values = []
 
         # force bounds
-        self.BCs_force_points = None
-        self.BCs_force_points_idx = None
-        self.BCs_force_values = None
+        self.BCs_force_indices = []
+        self.BCs_force_values = []
 
         # momentum bounds
-        self.BCs_momentum_points = None
-        self.BCs_momentum_points_idx = None
-        self.BCs_momentum_values = None
+        self.BCs_momentum_indices = []
+        self.BCs_momentum_values = []
 
-        self.BCs_X_indices = None
-        self.BCs_X_values = None
+        # wrapping up bounds
+        self.BCs_X_indices = []
+        self.BCs_X_values = []
 
-        self.BCs_F_indices = None
-        self.BCs_F_values = None
+        self.BCs_F_indices = []
+        self.BCs_F_values = []
 
-    def get_disp_bounds( self, bound_points, bound_values ):
+    def add_disp_bound_xyz(self, point_coords, value_x, value_y, value_z):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
 
-        bound_points_idx = find_points_indices( self.frame, bound_points )
+        self.BCs_disp_indices = self.BCs_disp_indices + [ idx * 6, idx * 6 + 1, idx * 6 + 2 ]
+        self.BCs_disp_values = self.BCs_disp_values + [ value_x, value_y, value_z ]
 
-        self.BCs_disp_points = np.copy( bound_points )
-        self.BCs_disp_points_idx = np.copy( bound_points_idx )
-        self.BCs_disp_values = np.copy( bound_values )
+    def add_disp_bound_x(self, point_coords, value: float ):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
 
-    def get_rot_bounds( self, bound_points, bound_values ):
+        self.BCs_disp_indices = self.BCs_disp_indices + [ idx * 6 ]
+        self.BCs_disp_values = self.BCs_disp_values + [ value ]
 
-        bound_points_idx = find_points_indices( self.frame, bound_points )
+    def add_disp_bound_y(self, point_coords, value: float):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
 
-        self.BCs_rot_points = np.copy( bound_points )
-        self.BCs_rot_points_idx = np.copy( bound_points_idx )
-        self.BCs_rot_values = np.copy( bound_values )
+        self.BCs_disp_indices = self.BCs_disp_indices + [ idx * 6 + 1 ]
+        self.BCs_disp_values = self.BCs_disp_values + [ value ]
 
-    def get_force_bounds( self, bound_points, bound_values ):
+    def add_disp_bound_z(self, point_coords, value: float):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
 
-        bound_points_idx = find_points_indices( self.frame, bound_points )
+        self.BCs_disp_indices = self.BCs_disp_indices + [ idx * 6 + 2 ]
+        self.BCs_disp_values = self.BCs_disp_values + [ value ]
 
-        self.BCs_force_points = np.copy( bound_points )
-        self.BCs_force_points_idx = np.copy( bound_points_idx )
-        self.BCs_force_values = np.copy( bound_values )
+    def add_rot_bound_xyz(self, point_coords, value_x, value_y, value_z):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
 
-    def get_momentum_bounds( self, bound_points, bound_values ):
+        self.BCs_rot_indices = self.BCs_rot_indices + [ idx * 6 + 3, idx * 6 + 4, idx * 6 + 5 ]
+        self.BCs_rot_values = self.BCs_rot_values + [ value_x, value_y, value_z ]
 
-        bound_points_idx = find_points_indices( self.frame, bound_points )
+    def add_rot_bound_x(self, point_coords, value: float ):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
 
-        self.BCs_momentum_points = np.copy( bound_points )
-        self.BCs_momentum_points_idx = np.copy( bound_points_idx )
-        self.BCs_momentum_values = np.copy( bound_values )
+        self.BCs_rot_indices = self.BCs_rot_indices + [ idx * 6 + 3]
+        self.BCs_rot_values = self.BCs_rot_values + [ value ]
+
+    def add_rot_bound_y(self, point_coords, value: float):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
+
+        self.BCs_rot_indices = self.BCs_rot_indices + [ idx * 6 + 4 ]
+        self.BCs_rot_values = self.BCs_rot_values + [ value ]
+
+    def add_rot_bound_z(self, point_coords, value: float):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
+
+        self.BCs_rot_indices = self.BCs_rot_indices + [ idx * 6 + 5 ]
+        self.BCs_rot_values = self.BCs_rot_values + [ value ]
+
+    def add_force_bound_xyz(self, point_coords, value_x, value_y, value_z):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
+
+        self.BCs_force_indices = self.BCs_force_indices + [ idx * 6, idx * 6 + 1, idx * 6 + 2 ]
+        self.BCs_force_values = self.BCs_force_values + [ value_x, value_y, value_z ]
+
+    def add_force_bound_x(self, point_coords, value):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
+
+        self.BCs_force_indices = self.BCs_force_indices + [ idx * 6 ]
+        self.BCs_force_values = self.BCs_force_values + [ value ]
+
+    def add_force_bound_y(self, point_coords, value):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
+
+        self.BCs_force_indices = self.BCs_force_indices + [ idx * 6 + 1 ]
+        self.BCs_force_values = self.BCs_force_values + [ value ]
+
+    def add_force_bound_z(self, point_coords, value):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
+
+        self.BCs_force_indices = self.BCs_force_indices + [ idx * 6 + 2 ]
+        self.BCs_force_values = self.BCs_force_values + [ value ]
+
+    def add_momentum_bound_xyz(self, point_coords, value_x, value_y, value_z):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
+
+        self.BCs_momentum_indices = self.BCs_momentum_indices + [ idx * 6 + 3, idx * 6 + 4, idx * 6 + 5 ]
+        self.BCs_momentum_values = self.BCs_momentum_values + [ value_x, value_y, value_z ]
+
+    def add_momentum_bound_x(self, point_coords, value):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
+
+        self.BCs_momentum_indices = self.BCs_momentum_indices + [ idx * 6 + 3 ]
+        self.BCs_momentum_values = self.BCs_momentum_values + [ value ]
+
+    def add_momentum_bound_y(self, point_coords, value):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
+
+        self.BCs_momentum_indices = self.BCs_momentum_indices + [ idx * 6 + 4 ]
+        self.BCs_momentum_values = self.BCs_momentum_values + [ value ]
+
+    def add_momentum_bound_z(self, point_coords, value):
+        point_coords_key = tuple( point_coords )
+        idx = self.frame.points_unique[ point_coords_key ] 
+
+        self.BCs_momentum_indices = self.BCs_momentum_indices + [ idx * 6 + 5 ]
+        self.BCs_momentum_values = self.BCs_momentum_values + [ value ]
+
+    def validate_bounds( self  ):
+        intersect_len = len( np.intersect1d( self.BCs_X_indices, self.BCs_F_indices ) )
+        union_len = len( np.union1d( self.BCs_X_indices, self.BCs_F_indices ) )
+        if intersect_len > 0:
+            raise OverDefinedError("The problem is overdefined. ")
+        elif union_len < self.n_DoFs:
+            
+            raise UnderDefinedError("The problem is underdefined. ")
+        else:
+            print( "Bounds are good to go!" )
 
     def set_up_bounds( self ):
         '''known X indices'''
-        X_indices = np.array( range( self.n_DoFs ) )
-
-        BCs_disp_X_indices_start = 6 * self.BCs_disp_points_idx 
-        BCs_disp_X_indices_end = BCs_disp_X_indices_start + 3
-        BCs_disp_X_indices = np.array( [ X_indices[BCs_disp_X_indices_start[i]:BCs_disp_X_indices_end[i]] for i in range(len(self.BCs_disp_points_idx ))] ).reshape( -1 )
-
-        BCs_rot_X_indices_start = 6 * self.BCs_rot_points_idx + 3
-        BCs_rot_X_indices_end = BCs_rot_X_indices_start + 3
-        BCs_rot_X_indices = np.array( [ X_indices[BCs_rot_X_indices_start[i]:BCs_rot_X_indices_end[i]] for i in range(len(self.BCs_rot_points_idx ))] ).reshape( -1 )
-
-        BCs_X_indices = np.concatenate( ( BCs_disp_X_indices,  BCs_rot_X_indices ) )
-        BCs_X_values = np.concatenate( ( self.BCs_disp_values.reshape(-1), self.BCs_rot_values.reshape(-1) ) )
+        BCs_X_indices = np.concatenate( (  self.BCs_disp_indices,  self.BCs_rot_indices ) ) 
+        BCs_X_values = np.concatenate( ( self.BCs_disp_values, self.BCs_rot_values ) )
 
         # Get the order of indices that would sort array a
         order = np.argsort( BCs_X_indices )
@@ -109,18 +173,8 @@ class BoundaryConditions:
         self.BCs_X_values = BCs_X_values[ order ]
 
         '''known F indices'''
-        F_indices = np.array( range( self.n_DoFs ) )
-
-        BCs_force_F_indices_start = 6 * self.BCs_force_points_idx 
-        BCs_force_F_indices_end = BCs_force_F_indices_start + 3
-        BCs_force_F_indices = np.array( [ F_indices[BCs_force_F_indices_start[i]:BCs_force_F_indices_end[i]] for i in range(len(self.BCs_force_points_idx ))] ).reshape( -1 )
-
-        BCs_momentum_F_indices_start = 6 * self.BCs_momentum_points_idx + 3
-        BCs_momentum_F_indices_end = BCs_momentum_F_indices_start + 3
-        BCs_momentum_F_indices = np.array( [ F_indices[BCs_momentum_F_indices_start[i]:BCs_momentum_F_indices_end[i]] for i in range(len(self.BCs_momentum_points_idx ))] ).reshape( -1 )
-
-        BCs_F_indices = np.concatenate( ( BCs_force_F_indices,  BCs_momentum_F_indices ) )
-        BCs_F_values = np.concatenate( ( self.BCs_force_values.reshape(-1), self.BCs_momentum_values.reshape(-1) ) )
+        BCs_F_indices = np.concatenate( (  self.BCs_force_indices,  self.BCs_momentum_indices ) ) 
+        BCs_F_values = np.concatenate( ( self.BCs_force_values, self.BCs_momentum_values ) )
 
         # Get the order of indices that would sort array a
         order = np.argsort( BCs_F_indices )
@@ -128,19 +182,6 @@ class BoundaryConditions:
         self.BCs_F_indices = BCs_F_indices[ order ]
         self.BCs_F_values = BCs_F_values[ order ]
 
-        self.check_valid_bounds()
-
-    def check_valid_bounds( self  ):
-        intersect_len = len( np.intersect1d( self.BCs_X_indices, self.BCs_F_indices ) )
-        union_len = len( np.union1d( self.BCs_X_indices, self.BCs_F_indices ) )
-        if intersect_len > 0:
-            raise OverDefinedError("The problem is overdefined. ")
-        elif union_len < self.n_DoFs:
-            raise UnderDefinedError("The problem is underdefined. ")
-        else:
-            print( "Bounds are good to go!" )
+        self.validate_bounds()
 
     
-
-        
-        
