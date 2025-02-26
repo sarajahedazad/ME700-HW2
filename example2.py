@@ -71,5 +71,5 @@ K = smat.get_stiffmat_global()
 X, F = solve_stiffness_system( K, bcs )
 
 node_idx = 0
-print( f'Disp/rotations at node: { node_idx }', X[node_idx * 6: node_idx * 6 + 6] )
-print( f'Reactions at node: { node_idx }', F[node_idx * 6: node_idx * 6 + 6] )
+print( f'Disp/rotations at Node { node_idx }:', X[node_idx * 6: node_idx * 6 + 6] )
+print( f'Reactions at Node { node_idx }:', F[node_idx * 6: node_idx * 6 + 6] )
