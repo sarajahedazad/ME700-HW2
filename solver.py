@@ -1,6 +1,24 @@
 import numpy as np
-
+from scipy.linalg import eig
 # Note: ChatGPT was used for this function
+
+def partition(matrix, known_DoF_idx):
+    known_idx = known_DoF_idx
+    n = matrix.shape[0]
+    
+    # Identify free DOF indices (those not prescribed)
+    free_idx = np.setdiff1d(np.arange(n), known_idx)
+    
+    # Partition the stiffness matrix into submatrices:
+    # K_pp: prescribed-prescribed, K_pu: prescribed-free,
+    # K_up: free-prescribed, K_uu: free-free.
+    matrix_pp = matrix[np.ix_(known_idx, known_idx)]
+    matrix_pu = matrix[np.ix_(known_idx, free_idx)]
+    matrix_up = matrix[np.ix_(free_idx, known_idx)]
+    matrix_uu = matrix[np.ix_(free_idx, free_idx)]
+
+    return matrix_pp, matrix_pu, matrix_up, matrix_uu
+
 
 def solve_stiffness_system(K, bcs):
     known_disp_idx = bcs.BCs_X_indices 
@@ -34,21 +52,11 @@ def solve_stiffness_system(K, bcs):
             The full force vector (size n), where the reaction forces at the prescribed DOFs have been computed.
     """
     n = K.shape[0]
-    
-    # Identify free DOF indices (those not prescribed)
-    free_disp_idx = np.setdiff1d(np.arange(n), known_disp_idx)
-    
-    # Partition the stiffness matrix into submatrices:
-    # K_pp: prescribed-prescribed, K_pu: prescribed-free,
-    # K_up: free-prescribed, K_uu: free-free.
-    K_pp = K[np.ix_(known_disp_idx, known_disp_idx)]
-    K_pu = K[np.ix_(known_disp_idx, free_disp_idx)]
-    K_up = K[np.ix_(free_disp_idx, known_disp_idx)]
-    K_uu = K[np.ix_(free_disp_idx, free_disp_idx)]
+    K_pp, K_pu, K_up, K_uu = partition(K, known_disp_idx)
     
     # Partition the displacement and force vectors:
     X_p = np.array(X_prescribed)
-    F_u = F_full[free_disp_idx]
+    F_u = F_full[known_F_idx]
     
     # For the free DOFs, the governing equations are:
     # F_u = K_up * X_p + K_uu * X_u
@@ -62,8 +70,44 @@ def solve_stiffness_system(K, bcs):
     X = np.zeros(n)
     F = np.copy(F_full)
     X[known_disp_idx] = X_p
-    X[free_disp_idx] = X_u
+    X[known_F_idx] = X_u
     F[known_disp_idx] = F_p  # reaction forces
     
     return X, F
+
+def compute_critical_load(K_elastic, K_geometric):
+    """
+    Solves the buckling eigenvalue problem to find the critical load.
+
+    Parameters:
+    K_elastic (ndarray): Elastic stiffness matrix.
+    K_geometric (ndarray): Geometric stiffness matrix.
+    P_applied (float): Applied force before buckling.
+
+    Returns:
+    float: Critical buckling load P_cr
+    float: Smallest eigenvalue (buckling factor)
+    ndarray: Corresponding eigenvector (buckling mode shape)
+    
+    """
+    # known_DoF_idx = bcs.BCs_X_indices 
+    # _, _, _, k_uu = partition(K_elastic, known_DoF_idx) 
+    # _, _, _, k_g_uu = partition(K_geometric, known_DoF_idx) 
+
+    # Solve the generalized eigenvalue problem: (K_elastic - lambda * K_geometric) = 0
+    eigenvalues, eigenvectors = eig(K_elastic, K_geometric)
+
+    # Extract real positive eigenvalues (buckling factors)
+    real_eigenvalues = np.real(eigenvalues)  # Take only the real part
+    positive_eigenvalues = real_eigenvalues[real_eigenvalues > 0]  # Keep only positive values
+
+    #print( real_eigenvalues )
+    if len(positive_eigenvalues) == 0:
+        raise ValueError("No positive eigenvalue found! Check input matrices.")
+
+    # Smallest positive eigenvalue (critical load factor)
+    lambda_critical = np.min(positive_eigenvalues)
+
+    return lambda_critical
+
 
