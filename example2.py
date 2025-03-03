@@ -2,8 +2,9 @@ import numpy as np
 from geometry import *
 from math_utils import *
 from boundary_conditions import *
-from direct_stiffness_method import *
+from stiffness_matrices import *
 from solver import *
+from plotting import *
 
 '''-------------------------------------------------------------'''
 '''------------------Defining The Structure---------------------'''
@@ -15,6 +16,7 @@ nu = 0.3
 A = np.pi * r **2
 Iy = np.pi * r ** 4 / 4
 Iz = np.pi * r ** 4 / 4
+I_rho = np.pi * r ** 4 / 2
 J = np.pi * r ** 4 / 2
 
 #-----Building the Frame-----
@@ -25,10 +27,10 @@ p2 = frame.add_point(-1, 5, 13)
 p3 = frame.add_point(-3, 7, 11)
 p4 = frame.add_point(6, 9, 5)
 
-el0 = frame.add_element( p0, p1, E, nu, A, Iy, Iz, J )
-el1 = frame.add_element( p1, p2, E, nu, A, Iy, Iz, J )
-el2 = frame.add_element( p2, p3, E, nu, A, Iy, Iz, J )
-el3 = frame.add_element( p2, p4, E, nu, A, Iy, Iz, J )
+el0 = frame.add_element( p0, p1, E, nu, A, Iy, Iz, I_rho, J )
+el1 = frame.add_element( p1, p2, E, nu, A, Iy, Iz, I_rho, J )
+el2 = frame.add_element( p2, p3, E, nu, A, Iy, Iz, I_rho, J )
+el3 = frame.add_element( p2, p4, E, nu, A, Iy, Iz, I_rho, J )
 element_lst = [el0, el1, el2, el3]
 frame.build_frame( element_lst )
 '''-------------------------------------------------------------'''
@@ -62,8 +64,9 @@ bcs.set_up_bounds()
 '''-------------------------------------------------------------'''
 '''-----------Build the Global Stiffness Matrix-----------------'''
 '''-------------------------------------------------------------'''
-smat = StiffnessMat( frame )
-K = smat.get_stiffmat_global()
+stiffmat = StiffnessMatrices( frame )
+K = stiffmat.get_global_elastic_stiffmatrix()
+
 
 '''-------------------------------------------------------------'''
 '''-------------------Solving for unknowns----------------------'''
@@ -89,3 +92,17 @@ print( f'Reactions at Node { node_idx }:', F[node_idx * 6: node_idx * 6 + 6] )
 node_idx = 4
 print( f'Disp/rotations at Node { node_idx }:', X[node_idx * 6: node_idx * 6 + 6] )
 print( f'Reactions at Node { node_idx }:', F[node_idx * 6: node_idx * 6 + 6] )
+
+'''-------------------------------------------------------------'''
+'''----------------Getting Geometric Stiffness------------------'''
+'''-------------------------------------------------------------'''
+K_geom = stiffmat.get_global_geometric_stiffmat( F )
+lambda_critical = compute_critical_load(K, K_geom)
+print( 'lambda critical', lambda_critical )
+# saving_dir_with_name = 'example1_initialconf.png'
+# plot_original_configuration( frame, saving_dir_with_name )
+
+saving_dir_with_name = 'original_conf.png'
+plot_original_configuration( frame, saving_dir_with_name )
+saving_dir_with_name = 'orig_vs_deformed_conf.png'
+plot_original_vs_deformed_configurations( frame, X, saving_dir_with_name, scale = 5)
