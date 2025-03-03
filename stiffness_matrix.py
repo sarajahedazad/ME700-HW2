@@ -57,9 +57,9 @@ class StiffnessMatrices:
             K[ p1_DoF_idx : p1_DoF_idx + 6, p1_DoF_idx:  p1_DoF_idx + 6  ] += k_element_p11
         return K
 
-    # def get_F_el_global( self, p0_idx, p1_idx, F):
-    #     F_el_global = np.concatenate( ( F[p0_idx*6: p0_idx*6 + 6], F[p1_idx*6: p1_idx*6+6] ))
-    #     return F_el_global
+    def get_F_el_global( self, p0_idx, p1_idx, F):
+        F_el_global = np.concatenate( ( F[p0_idx*6: p0_idx*6 + 6], F[p1_idx*6: p1_idx*6+6] ))
+        return F_el_global
 
     def get_F_el_local( self, element_idx, F ):
         connection, E, nu, A, L, Iy, Iz, I_rho, J, v_temp = self.get_element_parameters( element_idx )
@@ -69,10 +69,10 @@ class StiffnessMatrices:
         F_el_local = Gamma.T @ F_el_global
         return F_el_local
 
-    def get_F_el_local( self, element_idx, F ):
-        connection, E, nu, A, L, Iy, Iz, I_rho, J, v_temp = self.get_element_parameters( element_idx )
-        p0_idx, p0, p1_idx, p1 = self.get_element_points( connection )
-        return self.get_F_el_global( p0_idx, p1_idx, F)
+    # def get_F_el_local( self, element_idx, F ):
+    #     connection, E, nu, A, L, Iy, Iz, I_rho, J, v_temp = self.get_element_parameters( element_idx )
+    #     p0_idx, p0, p1_idx, p1 = self.get_element_points( connection )
+    #     return self.get_F_el_global( p0_idx, p1_idx, F)
 
     def get_local_geometric_stiffness_matrix_3D_beam(self, element_idx, F):
         connection, E, nu, A, L, Iy, Iz, I_rho, J, v_temp = self.get_element_parameters( element_idx )
