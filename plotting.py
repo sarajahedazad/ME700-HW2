@@ -26,64 +26,64 @@ def plot_original_configuration( frame_obj, saving_dir_with_name ):
     plt.show()
     plt.savefig( saving_dir_with_name )
 
-def plot_deformed_configuration( frame_obj, X, saving_dir_with_name):
-    points = frame_obj.points
-    connectivities = frame_obj.connectivities
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    p0 = points[0]
-    disp_p0 = X[ 0: 3 ]
-    point_displaced = p0 + disp_p0
-    ax.scatter(*point_displaced, color='red', label='Displaced Nodes')
-    for i, point in enumerate( points[1:] ):
-        disp = X[6:][ i * 6: i * 6 + 3 ]
-        point_displaced = point + disp
-        ax.scatter(*point_displaced, color='red')
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    ax.legend()
-    ax.grid(True)
+# def plot_deformed_configuration( frame_obj, X, saving_dir_with_name):
+#     points = frame_obj.points
+#     connectivities = frame_obj.connectivities
+#     fig = plt.figure()
+#     ax = fig.add_subplot(111, projection='3d')
+#     p0 = points[0]
+#     disp_p0 = X[ 0: 3 ]
+#     point_displaced = p0 + disp_p0
+#     ax.scatter(*point_displaced, color='red', label='Displaced Nodes')
+#     for i, point in enumerate( points[1:] ):
+#         disp = X[6:][ i * 6: i * 6 + 3 ]
+#         point_displaced = point + disp
+#         ax.scatter(*point_displaced, color='red')
+#     ax.set_xlabel('X')
+#     ax.set_ylabel('Y')
+#     ax.set_zlabel('Z')
+#     ax.legend()
+#     ax.grid(True)
 
-    plt.show()
-    plt.savefig( saving_dir_with_name )
+#     plt.show()
+#     plt.savefig( saving_dir_with_name )
 
-def plot_original_vs_deformed_configurations( frame_obj, X, saving_dir_with_name):
-    points = frame_obj.points
-    connectivities = frame_obj.connectivities
-    fig = plt.figure()
+# def plot_original_vs_deformed_configurations( frame_obj, X, saving_dir_with_name):
+#     points = frame_obj.points
+#     connectivities = frame_obj.connectivities
+#     fig = plt.figure()
 
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(*points[0], color='black', s = 4, label='Nodes')
-    for point in points[1:]:
-        ax.scatter(*point, color='black', s = 4)
-    p0 = points[ connectivities[0][0] ]
-    p1 = points[ connectivities[0][1] ]
-    ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]], 'k--', label='Elements')
-    for connection in connectivities[ 1: ]:
-        p0 = points[ connection[0] ]
-        p1 = points[ connection[1] ]
-        ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]], 'k--')
+#     ax = fig.add_subplot(111, projection='3d')
+#     ax.scatter(*points[0], color='black', s = 4, label='Nodes')
+#     for point in points[1:]:
+#         ax.scatter(*point, color='black', s = 4)
+#     p0 = points[ connectivities[0][0] ]
+#     p1 = points[ connectivities[0][1] ]
+#     ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]], 'k--', label='Elements')
+#     for connection in connectivities[ 1: ]:
+#         p0 = points[ connection[0] ]
+#         p1 = points[ connection[1] ]
+#         ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]], 'k--')
 
-    p0 = points[0]
-    disp_p0 = X[ 0: 3 ]
-    point_displaced = p0 + disp_p0
-    ax.scatter(*point_displaced, color='red', label='Displaced Nodes')
-    for i, point in enumerate( points[1:] ):
-        disp = X[6:][ i * 6: i * 6 + 3 ]
-        point_displaced = point + disp
-        ax.scatter(*point_displaced, color='red')
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    ax.legend()
-    ax.grid(True)
+#     p0 = points[0]
+#     disp_p0 = X[ 0: 3 ]
+#     point_displaced = p0 + disp_p0
+#     ax.scatter(*point_displaced, color='red', label='Displaced Nodes')
+#     for i, point in enumerate( points[1:] ):
+#         disp = X[6:][ i * 6: i * 6 + 3 ]
+#         point_displaced = point + disp
+#         ax.scatter(*point_displaced, color='red')
+#     ax.set_xlabel('X')
+#     ax.set_ylabel('Y')
+#     ax.set_zlabel('Z')
+#     ax.legend()
+#     ax.grid(True)
 
-    plt.show()
-    plt.savefig( saving_dir_with_name )
+#     plt.show()
+#     plt.savefig( saving_dir_with_name )
 
 
-def plot_deformed_frame(frame_obj, X, saving_dir_with_name, scale=1.0, num_points=50):
+def plot_original_vs_deformed_configurations(frame_obj, X, saving_dir_with_name, scale=1.0, num_points=50):
     nodes = frame_obj.points
     elements = frame_obj.connectivities
     
