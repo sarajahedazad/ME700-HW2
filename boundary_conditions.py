@@ -183,5 +183,3 @@ class BoundaryConditions:
         self.BCs_F_values = BCs_F_values[ order ]
 
         self.validate_bounds()
-
-    
