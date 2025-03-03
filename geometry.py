@@ -14,7 +14,7 @@ class Point:
         self.coords = np.array([self.x, self.y, self.z])
 
 class Element:
-    def __init__(self, p0, p1, E, nu, A, Iy, Iz, J, v_temp = None):
+    def __init__(self, p0, p1, E, nu, A, Iy, Iz, I_rho, J, v_temp = None):
         self.p0 = p0
         self.p1 = p1
         self.E = E
@@ -23,6 +23,7 @@ class Element:
         self.L = self.calc_connection_length( )
         self.Iy = Iy
         self.Iz = Iz
+        self.I_rho = I_rho
         self.J = J
         self.v_temp = v_temp
     def calc_connection_length(self):
@@ -39,6 +40,7 @@ class Frame:
         self.L_array = None
         self.Iy_array = None
         self.Iz_array = None
+        self.I_rho_array = None
         self.J_array = None
         self.v_temp_array = None
          # a dictionary that gets the coordinations of a point as input and the key is the index
@@ -48,15 +50,15 @@ class Frame:
         point = Point( x, y, z )
         return point
 
-    def add_element( self, p0, p1, E, nu, A, Iy, Iz, J, v_temp = None ):
-        element = Element( p0, p1, E, nu, A, Iy, Iz, J, v_temp )
+    def add_element( self, p0, p1, E, nu, A, Iy, Iz, I_rho, J, v_temp = None ):
+        element = Element( p0, p1, E, nu, A, Iy, Iz, I_rho, J, v_temp )
         return element
 
     def build_frame( self, element_lst ):
         self.points_unique = {}
         point_lst = []
         connectivity_lst = []
-        E_lst, nu_lst, A_lst, L_lst, Iy_lst, Iz_lst, J_lst, v_temp_lst = [], [], [], [], [], [], [], []
+        E_lst, nu_lst, A_lst, L_lst, Iy_lst, Iz_lst, I_rho_lst, J_lst, v_temp_lst = [], [], [], [], [], [], [], [], []
         for element in element_lst:
             p0_obj = element.p0
             p1_obj = element.p1
@@ -83,6 +85,7 @@ class Frame:
             L_lst.append( element.L )
             Iy_lst.append( element.Iy )
             Iz_lst.append( element.Iz )
+            I_rho_lst.append( element.I_rho )
             J_lst.append( element.J )
             v_temp_lst.append( element.v_temp )
         self.points = np.array( point_lst )
@@ -93,12 +96,13 @@ class Frame:
         self.L_array = np.array( L_lst )
         self.Iy_array = np.array( Iy_lst )
         self.Iz_array = np.array( Iz_lst )
+        self.I_rho_array = np.array( I_rho_lst )
         self.J_array = np.array( J_lst )
         self.v_temp_array = np.array( v_temp_lst )
 
         print( 'Your frame is good to go!' )   
 
-    def generate_frame_directly( self, points, connectivities, E_array, nu_array, A_array, Iy_array, Iz_array, J_array, v_temp_array = None ):
+    def generate_frame_directly( self, points, connectivities, E_array, nu_array, A_array, Iy_array, Iz_array, I_rho_array, J_array, v_temp_array = None ):
         self.points = points
         self.connectivities = connectivities
         self.E_array = E_array
@@ -106,10 +110,10 @@ class Frame:
         self.A_array = A_array
         self.Iy_array = Iy_array
         self.Iz_array = Iz_array
+        self.I_rho_array = I_rho_array
         self.J_array = J_array
         self.v_temp_array = v_temp_array
 
         self.L_array = self.calc_all_connections_lengths()
 
         
-
