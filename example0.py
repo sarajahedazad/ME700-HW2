@@ -5,44 +5,49 @@ from boundary_conditions import *
 from stiffness_matrices import *
 from solver import *
 from plotting import *
+
 '''-------------------------------------------------------------'''
 '''------------------Defining The Structure---------------------'''
 '''-------------------------------------------------------------'''
 #------Parameters-------
-r = 0.25
+b, h = 0.5, 1
 E = 1000
 nu = 0.3
-A = np.pi * r **2
-Iy = np.pi * r ** 4 / 4
-Iz = np.pi * r ** 4 / 4
-I_rho = np.pi * r ** 4 / 2
-J = np.pi * r ** 4 / 2
-L = 10 
-P_applied = 1
+A = b * h
+Iy = h * b**3 / 12
+Iz = b * h**3 / 12
+I_rho = b * h/ 12 * (b**2 + h**2)
+J = 0.02861
+v_temp_0 = np.array( [0, 0, 1] )
+v_temp_1 = np.array( [1, 0, 0] )
 
 #-----Building the Frame-----
 frame = Frame()
-p0 = frame.add_point(0, 0, 0)
-p1 = frame.add_point(0, L, 0)
+p0 = frame.add_point(0, 0, 10)
+p1 = frame.add_point(15, 0, 10)
+p2 = frame.add_point(15, 0, 0)
 
-el0 = frame.add_element( p0, p1, E, nu, A, Iy, Iz, I_rho, J )
-element_lst = [el0]
+el0 = frame.add_element( p0, p1, E, nu, A, Iy, Iz, I_rho, J, v_temp_0 )
+el1 = frame.add_element( p1, p2, E, nu, A, Iy, Iz, I_rho, J, v_temp_1 )
+element_lst = [el0, el1]
 frame.build_frame( element_lst )
 '''-------------------------------------------------------------'''
 '''-------------------Boundary Conditions-----------------------'''
 '''-------------------------------------------------------------'''
 bcs = BoundaryConditions( frame )
 # displacement bounds
-bcs.add_disp_bound_xyz( [0, 0, 0], 0, 0, 0 )
+bcs.add_disp_bound_xyz( [0, 0, 10], 0, 0, 0 )
+bcs.add_disp_bound_xyz( [15, 0, 0], 0, 0, 0 )
 
 # rotation bounds
-bcs.add_rot_bound_xyz( [0, 0, 0], 0, 0, 0 )
+bcs.add_rot_bound_xyz( [0, 0, 10], 0, 0, 0 )
 
 # force bounds
-bcs.add_force_bound_xyz( [0, L, 0], 0, -P_applied, 0 )
+bcs.add_force_bound_xyz( [15, 0, 10], -0.05, 0.075, 0.1 )
 
 # momentum bounds
-bcs.add_momentum_bound_xyz( [0, L, 0], 0, 0, 0 )
+bcs.add_momentum_bound_xyz( [15, 0, 10], -0.05, 0.1, -0.25 )
+bcs.add_momentum_bound_xyz( [15, 0, 0], 0, 0, 0 )
 
 # we have to set up the bounds in the end
 bcs.set_up_bounds()
@@ -52,6 +57,7 @@ bcs.set_up_bounds()
 '''-------------------------------------------------------------'''
 stiffmat = StiffnessMatrices( frame )
 K = stiffmat.get_global_elastic_stiffmatrix()
+
 
 '''-------------------------------------------------------------'''
 '''-------------------Solving for unknowns----------------------'''
@@ -66,24 +72,19 @@ node_idx = 1
 print( f'Disp/rotations at Node { node_idx }:', X[node_idx * 6: node_idx * 6 + 6] )
 print( f'Reactions at Node { node_idx }:', F[node_idx * 6: node_idx * 6 + 6] )
 
+node_idx = 2
+print( f'Disp/rotations at Node { node_idx }:', X[node_idx * 6: node_idx * 6 + 6] )
+print( f'Reactions at Node { node_idx }:', F[node_idx * 6: node_idx * 6 + 6] )
 '''-------------------------------------------------------------'''
 '''----------------Getting Geometric Stiffness------------------'''
 '''-------------------------------------------------------------'''
 K_geom = stiffmat.get_global_geometric_stiffmat( F )
 lambda_critical = compute_critical_load(K, K_geom)
-print( 'lambda_critical', lambda_critical )
+print( 'lambda critical', lambda_critical )
+# saving_dir_with_name = 'example1_initialconf.png'
+# plot_original_configuration( frame, saving_dir_with_name )
 
-'''-------------------------------------------------------------'''
-'''----------------Theoritcal Critical Force--------------------'''
-'''-------------------------------------------------------------'''
-Le = 2 * L
-P_cr_theo = np.pi ** 2 * E * Iz / Le**2
-print( "P cr theory is ", P_cr_theo)
-
-'''------------Plot interpolated shape-----------'''
 saving_dir_with_name = 'original_conf.png'
 plot_original_configuration( frame, saving_dir_with_name )
 saving_dir_with_name = 'orig_vs_deformed_conf.png'
 plot_original_vs_deformed_configurations( frame, X, saving_dir_with_name)
-# saving_dir_with_name = 'new_stuff.png'
-# plot_deformed_frame(frame, X, saving_dir_with_name)
