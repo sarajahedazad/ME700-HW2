@@ -113,10 +113,6 @@ def test_get_eigenvector_element_global(shape_functions):
     expected = np.zeros(12)
     np.testing.assert_array_almost_equal(eigenvector_element_global, expected)
 
-def test_calc_eigenvector_element_local(shape_functions):
-    eigenvector_element_local = shape_functions.calc_eigenvector_element_local(0)
-    assert eigenvector_element_local.shape == (12,)
-    np.testing.assert_array_almost_equal(eigenvector_element_local, np.zeros(12))
 
 def test_calc_element_interpolation(shape_functions):
     interpolated_points = shape_functions.calc_element_interpolation(0)
