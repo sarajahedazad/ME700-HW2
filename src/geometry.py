@@ -1,7 +1,6 @@
 import numpy as np
 # Things to consider in the future: 
 # Is the points and connectivity privided are valid? (like, a single graph)
-# what if there is a duplication? 
 
 class DuplicationError(Exception):
     pass
@@ -104,8 +103,8 @@ class Frame:
 
     def calc_all_connections_lengths(self):
         lengths = []
-        for connection in self.connectivities:
-            p0_idx, p1_idx = connection
+        for conn in self.connectivities:
+            p0_idx, p1_idx = conn
             p0 = self.points[p0_idx]
             p1 = self.points[p1_idx]
             length = np.sqrt((p0[0] - p1[0])**2 + (p0[1] - p1[1])**2 + (p0[2] - p1[2])**2)
@@ -122,7 +121,12 @@ class Frame:
         self.Iz_array = Iz_array
         self.I_rho_array = I_rho_array
         self.J_array = J_array
+        
+        # Ensure v_temp_array is a numeric type
+        if v_temp_array is None:
+            v_temp_array = np.zeros(len(E_array))
         self.v_temp_array = v_temp_array
-        self.L_array = self
+        
+        self.L_array = self.calc_all_connections_lengths()
 
     
