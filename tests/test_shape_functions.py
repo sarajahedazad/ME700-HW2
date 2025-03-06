@@ -70,4 +70,3 @@ def test_hermite_N1(shape_functions):
     expr = shape_functions.hermite_N1(length)
     assert expr.shape == (shape_functions.n, 1)
 
-
