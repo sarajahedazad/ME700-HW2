@@ -147,4 +147,4 @@ def test_rotation_matrix_v_temp_none_case1(shape_functions):
 
 def test_rotation_matrix_v_temp_provided(shape_functions):
     gamma = shape_functions.rotation_matrix_3D(0, 0, 0, 1, 1, 1, np.array([0, 0, 1]))
-    assert gamma.shape == (3, 3)
+    assert gamma.shape == (3, 3 )
