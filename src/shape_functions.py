@@ -95,13 +95,6 @@ class ShapeFunctions:
     def get_eigenvector_element_global(self, p0_idx, p1_idx):
         return np.concatenate((self.eigenvector[6 * p0_idx: 6 * p0_idx + 6], self.eigenvector[6 * p1_idx: 6 * p1_idx + 6]))
 
-    def calc_eigenvector_element_local(self, element_idx):
-        connection, p0_idx, p0, p1_idx, p1, v_temp = self.get_element_info(element_idx)
-        gamma = self.rotation_matrix_3D(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], v_temp)
-        Gamma = self.transformation_1212_matrix_3D(gamma)
-        eigenvector_el_global = self.get_eigenvector_element_global(p0_idx, p1_idx)
-        eigenvector_el_local = Gamma.T @ eigenvector_el_global
-        return eigenvector_el_local
 
     def calc_element_interpolation(self, element_idx):
         connection, p0_idx, p0, p1_idx, p1, length, v_temp = self.get_element_info(element_idx)
