@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from stiffness_matrices import *
+from stiffness_matrices import StiffnessMatrices, local_elastic_stiffness_matrix_3D_beam, check_unit_vector, check_parallel, rotation_matrix_3D
 
 class MockFrame:
     def __init__(self):
@@ -51,8 +51,25 @@ def test_get_transformation_matrix_3D(stiffness_matrices):
     assert np.allclose(Gamma[0:3, 0:3], np.eye(3))
     assert np.allclose(Gamma[3:6, 3:6], np.eye(3))
 
+def test_check_unit_vector():
+    vec = np.array([1, 0, 0])
+    check_unit_vector(vec)
+    with pytest.raises(ValueError, match="Expected a unit vector for reference vector."):
+        check_unit_vector(np.array([1, 1, 0]))
+
+def test_check_parallel():
+    vec_1 = np.array([1, 0, 0])
+    vec_2 = np.array([0, 1, 0])
+    check_parallel(vec_1, vec_2)
+    with pytest.raises(ValueError, match="Reference vector is parallel to beam axis."):
+        check_parallel(np.array([1, 0, 0]), np.array([1, 0, 0]))
+
+def test_rotation_matrix_3D():
+    gamma = rotation_matrix_3D(0, 0, 0, 1, 0, 0)
+    assert gamma.shape == (3, 3)
+    assert np.allclose(gamma, np.eye(3))
+
 def test_get_global_elastic_stiffmatrix(stiffness_matrices):
     K = stiffness_matrices.get_global_elastic_stiffmatrix()
     assert K.shape == (12, 12)
     assert np.allclose(K[0, 0], 200e9 * 0.01 / 1.0)
-
