@@ -2,7 +2,6 @@ import numpy as np
 import pytest
 from geometry import *
 
-
 def test_point_creation():
     point = Point(1, 2, 3)
     assert point.x == 1
@@ -81,16 +80,16 @@ def test_duplicate_elements():
     except DuplicationError:
         print("DuplicationError successfully raised")
 
-def test_existing_point():
+def test_no_duplicate_elements():
     frame = Frame()
     p0 = frame.add_point(0, 0, 0)
-    frame.points_unique[(0, 0, 0)] = 0
     p1 = frame.add_point(1, 1, 1)
+    p2 = frame.add_point(2, 2, 2)
     element1 = frame.add_element(p0, p1, 210e9, 0.3, 0.01, 1e-6, 1e-6, 1e-6, 1e-6)
-    element2 = frame.add_element(p1, p0, 210e9, 0.3, 0.01, 1e-6, 1e-6, 1e-6, 1e-6)
+    element2 = frame.add_element(p1, p2, 210e9, 0.3, 0.01, 1e-6, 1e-6, 1e-6, 1e-6)
     frame.build_frame([element1, element2])
-    assert (frame.points == np.array([[0, 0, 0], [1, 1, 1]])).all()
-    assert (frame.connectivities == np.array([[0, 1], [1, 0]])).all()
+    assert (frame.points == np.array([[0, 0, 0], [1, 1, 1], [2, 2, 2]])).all()
+    assert (frame.connectivities == np.array([[0, 1], [1, 2]])).all()
 
 if __name__ == "__main__":
     test_point_creation()
@@ -100,7 +99,5 @@ if __name__ == "__main__":
     test_build_frame()
     test_generate_frame_directly()
     test_duplicate_elements()
-    test_existing_point()
+    test_no_duplicate_elements()
     print("All tests passed!")
-
-
