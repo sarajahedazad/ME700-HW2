@@ -119,9 +119,28 @@ def test_calc_element_interpolation(shape_functions):
     assert interpolated_points.shape == (shape_functions.n, 3)
     expected = np.linspace([0, 0, 0], [1, 1, 1], num=shape_functions.n)
     np.testing.assert_array_almost_equal(interpolated_points, expected)
+    
+def test_plot_element_interpolation(shape_functions, tmp_path):
+    # Generate a temporary file path
+    saving_dir_with_name = tmp_path / "test_plot.png"
+    
+    # Call the method to generate the plot and save the file
+    shape_functions.plot_element_interpolation(str(saving_dir_with_name))
+    
+    # Check if the file was created
+    assert saving_dir_with_name.exists(), "Plot file was not created."
+    
+    # Optionally, you can add more checks to verify the contents of the file,
+    # such as checking its size, format, etc.
 
+    # Cleanup: Remove the generated file if needed
+    os.remove(saving_dir_with_name)
 def test_rotation_matrix_v_temp_none(shape_functions):
     gamma = shape_functions.rotation_matrix_3D(0, 0, 0, 1, 1, 1, None)
+    assert gamma.shape == (3, 3)
+
+def test_rotation_matrix_v_temp_none_case1(shape_functions):
+    gamma = shape_functions.rotation_matrix_3D(0, 0, 0, 1, 0, 1, None)  # lxp is not close to 0, mxp is close to 0
     assert gamma.shape == (3, 3)
 
 def test_rotation_matrix_v_temp_provided(shape_functions):
