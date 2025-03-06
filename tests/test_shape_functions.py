@@ -141,8 +141,9 @@ def test_rotation_matrix_v_temp_none(shape_functions):
     assert gamma.shape == (3, 3)
 
 def test_rotation_matrix_v_temp_none_case1(shape_functions):
-    gamma = shape_functions.rotation_matrix_3D(0, 0, 0, 1, 0, 1, None)  # lxp is not close to 0, mxp is close to 0
+    gamma = shape_functions.rotation_matrix_3D(0, 0, 0, 0, 0, 1, None)  # lxp and mxp are close to 0.0
     assert gamma.shape == (3, 3)
+    assert np.array_equal(gamma[:, 1], np.array([0, 1, 0]))  # Check if v_temp was set to [0, 1.0, 0.0]
 
 def test_rotation_matrix_v_temp_provided(shape_functions):
     gamma = shape_functions.rotation_matrix_3D(0, 0, 0, 1, 1, 1, np.array([0, 0, 1]))
