@@ -3,11 +3,6 @@ import matplotlib.pyplot as plt
 import sympy
 from geometry import *
 
-def evaluate(expr, symb, x0):
-    func = sympy.lambdify(symb, expr, 'numpy')
-    func_val = func(*x0)
-    return func_val.reshape(-1)
-
 def interpolate_two_points(p0, p1, n):
     points_lst = [tuple(p0 + (p1 - p0) * i / n) for i in range(n + 1)]
     return np.array(points_lst)
