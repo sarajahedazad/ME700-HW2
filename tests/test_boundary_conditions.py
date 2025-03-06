@@ -2,9 +2,6 @@ import numpy as np
 import geometry as geom
 from boundary_conditions import *
 
-import numpy as np
-import geometry as geom
-
 def setup_frame():
     frame = geom.Frame()
     p0 = frame.add_point(0, 0, 0)
