@@ -165,6 +165,9 @@ class ShapeFunctions:
         ax.legend()
         ax.grid(True)
         ax.set_aspect('equal')
-    
+
         plt.show()
+
+        plt.savefig( saving_dir_with_name )
+    
         
