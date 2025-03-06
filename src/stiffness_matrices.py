@@ -1,23 +1,10 @@
 import numpy as np
-
-
+from geometry import *
+from boundary_conditions import *
+'''-------------------------------------------------------------'''
+'''--------------from Dr. Lejeune's course material---------------'''
+'''-------------------------------------------------------------'''
 def local_elastic_stiffness_matrix_3D_beam(E: float, nu: float, A: float, L: float, Iy: float, Iz: float, J: float) -> np.ndarray:
-    """
-    local element elastic stiffness matrix
-    source: p. 73 of McGuire's Matrix Structural Analysis 2nd Edition
-    Given:
-        material and geometric parameters:
-            A, L, Iy, Iz, J, nu, E
-    Context:
-        load vector:
-            [Fx1, Fy1, Fz1, Mx1, My1, Mz1, Fx2, Fy2, Fz2, Mx2, My2, Mz2]
-        DOF vector:
-            [u1, v1, w1, th_x1, th_y1, th_z1, u2, v2, w2, th_x2, th_y2, th_z2]
-        Equation:
-            [load vector] = [stiffness matrix] @ [DOF vector]
-    Returns:
-        12 x 12 elastic stiffness matrix k_e
-    """
     k_e = np.zeros((12, 12))
     # Axial terms - extension of local x axis
     axial_stiffness = E * A / L
@@ -67,19 +54,15 @@ def local_elastic_stiffness_matrix_3D_beam(E: float, nu: float, A: float, L: flo
     k_e[10, 4] = E * 2.0 * Iy / L
     return k_e
 
-
+# from Dr. Lejeune's course material
 def check_unit_vector(vec: np.ndarray):
-    """
-    """
     if np.isclose(np.linalg.norm(vec), 1.0):
         return
     else:
         raise ValueError("Expected a unit vector for reference vector.")
 
-
+# from Dr. Lejeune's course material
 def check_parallel(vec_1: np.ndarray, vec_2: np.ndarray):
-    """
-    """
     if np.isclose(np.linalg.norm(np.cross(vec_1, vec_2)), 0.0):
         raise ValueError("Reference vector is parallel to beam axis.")
     else:
@@ -87,19 +70,7 @@ def check_parallel(vec_1: np.ndarray, vec_2: np.ndarray):
 
 
 def rotation_matrix_3D(x1: float, y1: float, z1: float, x2: float, y2: float, z2: float, v_temp: np.ndarray = None):
-    """
-    3D rotation matrix
-    source: Chapter 5.1 of McGuire's Matrix Structural Analysis 2nd Edition
-    Given:
-        x, y, z coordinates of the ends of two beams: x1, y1, z1, x2, y2, z2
-        optional: reference z vector direction v_temp to orthonormalize the local y and z axis
-            if v_temp is not given, VVVV
-    Compute:
-        where l, m, n are defined as direction cosines:
-        gamma = [[lx'=cos alpha_x', mx'=cos beta_x', nx'=cos gamma_x'],
-                 [ly'=cos alpha_y', my'=cos beta_y', ny'=cos gamma_y'],
-                 [lz'=cos alpha_z', mz'=cos beta_z', nz'=cos gamma_z']]
-    """
+    # from Dr. Lejeune's course material
     L = np.sqrt((x2 - x1) ** 2.0 + (y2 - y1) ** 2.0 + (z2 - z1) ** 2.0)
     lxp = (x2 - x1) / L
     mxp = (y2 - y1) / L
@@ -133,16 +104,8 @@ def rotation_matrix_3D(x1: float, y1: float, z1: float, x2: float, y2: float, z2
     
     return gamma
 
-
+# from Dr. Lejeune's course material
 def transformation_matrix_3D(gamma: np.ndarray) -> np.ndarray:
-    """
-    3D transformation matrix
-    source: Chapter 5.1 of McGuire's Matrix Structural Analysis 2nd Edition
-    Given:
-        gamma -- the 3x3 rotation matrix
-    Compute:
-        Gamma -- the 12x12 transformation matrix
-    """
     Gamma = np.zeros((12, 12))
     Gamma[0:3, 0:3] = gamma
     Gamma[3:6, 3:6] = gamma
@@ -150,26 +113,8 @@ def transformation_matrix_3D(gamma: np.ndarray) -> np.ndarray:
     Gamma[9:12, 9:12] = gamma
     return Gamma
 
-
+# from Dr. Lejeune's course material
 def local_geometric_stiffness_matrix_3D_beam(L, A, I_rho, Fx2, Mx2, My1, Mz1, My2, Mz2):
-    """
-    local element geometric stiffness matrix
-    source: p. 258 of McGuire's Matrix Structural Analysis 2nd Edition
-    Given:
-        material and geometric parameters:
-            L, A, I_rho (polar moment of inertia)
-        element forces and moments:
-            Fx2, Mx2, My1, Mz1, My2, Mz2
-    Context:
-        load vector:
-            [Fx1, Fy1, Fz1, Mx1, My1, Mz1, Fx2, Fy2, Fz2, Mx2, My2, Mz2]
-        DOF vector:
-            [u1, v1, w1, th_x1, th_y1, th_z1, u2, v2, w2, th_x2, th_y2, th_z2]
-        Equation:
-            [load vector] = [stiffness matrix] @ [DOF vector]
-    Returns:
-        12 x 12 geometric stiffness matrix k_g
-    """
     k_g = np.zeros((12, 12))
     # upper triangle off diagonal terms
     k_g[0, 6] = -Fx2 / L
@@ -229,28 +174,9 @@ def local_geometric_stiffness_matrix_3D_beam(L, A, I_rho, Fx2, Mx2, My1, Mz1, My
     k_g[11, 11] = 2.0 * Fx2 * L / 15.0
     return k_g
 
-
+# from Dr. Lejeune's course material
 def local_geometric_stiffness_matrix_3D_beam_without_interaction_terms(L, A, I_rho, Fx2):
-    """
-    local element geometric stiffness matrix
-    source: p. 257 of McGuire's Matrix Structural Analysis 2nd Edition
-    Given:
-        material and geometric parameters:
-            L, A, I_rho (polar moment of inertia)
-        element forces and moments:
-            Fx2
-    Context:
-        load vector:
-            [Fx1, Fy1, Fz1, Mx1, My1, Mz1, Fx2, Fy2, Fz2, Mx2, My2, Mz2]
-        DOF vector:
-            [u1, v1, w1, th_x1, th_y1, th_z1, u2, v2, w2, th_x2, th_y2, th_z2]
-        Equation:
-            [load vector] = [stiffness matrix] @ [DOF vector]
-    Returns:
-        12 x 12 geometric stiffness matrix k_g
-    """
     k_g = np.zeros((12, 12))
-    # upper triangle off diagonal terms
     k_g[0, 6] = -Fx2 / L
     k_g[1, 5] = Fx2 / 10.0
     k_g[1, 7] = -6.0 * Fx2 / (5.0 * L)
@@ -281,3 +207,108 @@ def local_geometric_stiffness_matrix_3D_beam_without_interaction_terms(L, A, I_r
     k_g[10, 10] = 2.0 * Fx2 * L / 15.0
     k_g[11, 11] = 2.0 * Fx2 * L / 15.0
     return k_g
+'''-------------------------------------------------------------'''
+'''------End of the codes from Dr. Lejeune's course material-----'''
+'''-------------------------------------------------------------'''
+class StiffnessMatrices:
+    def __init__(self, frame_obj):
+        self.frame = frame_obj
+        self.n_points = self.frame.points.shape[0]
+        self.n_connectivities = self.frame.connectivities.shape[0]
+        self.n_DoFs = self.n_points * 6
+
+    def get_element_parameters( self, element_idx ):
+        connection = self.frame.connectivities[ element_idx ]
+        E = self.frame.E_array[ element_idx ]
+        nu = self.frame.nu_array[ element_idx ]
+        A = self.frame.A_array[ element_idx ]
+        L = self.frame.L_array[ element_idx ]
+        Iy = self.frame.Iy_array[ element_idx ]
+        Iz = self.frame.Iz_array[ element_idx ]
+        I_rho = self.frame.I_rho_array[ element_idx ]
+        J = self.frame.J_array[ element_idx ]
+        v_temp = self.frame.v_temp_array[ element_idx ]
+        return connection, E, nu, A, L, Iy, Iz, I_rho, J, v_temp
+
+    def get_element_points( self, connection ):
+        p0_idx = connection[0]
+        p0 = self.frame.points[ connection[ 0 ] ]
+        p1_idx = connection[1]
+        p1 = self.frame.points[ connection[ 1 ] ]
+        return p0_idx, p0, p1_idx, p1
+
+    def get_transformation_matrix_3D( self, p0, p1, v_temp ):
+        gamma = rotation_matrix_3D(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], v_temp)
+        Gamma = transformation_matrix_3D(gamma)
+        return Gamma
+
+    def get_global_elastic_stiffmatrix( self ):
+        K = np.zeros(( self.n_DoFs, self.n_DoFs ) )
+        for element_idx in range( self.n_connectivities ):
+            connection, E, nu, A, L, Iy, Iz, I_rho, J, v_temp = self.get_element_parameters( element_idx )
+            p0_idx, p0, p1_idx, p1 = self.get_element_points( connection )
+            
+            k_element_local = local_elastic_stiffness_matrix_3D_beam(E, nu, A, L, Iy, Iz, J )
+            Gamma = self.get_transformation_matrix_3D( p0, p1, v_temp)
+            k_element_global = Gamma.T @ k_element_local @ Gamma
+            k_element_p00 = k_element_global[0:6, 0:6]
+            k_element_p01 = k_element_global[0:6, 6:12]
+            k_element_p10 = k_element_global[6:12, 0:6]
+            k_element_p11 = k_element_global[6:12, 6:12]
+            
+            p0_DoF_idx = p0_idx * 6
+            p1_DoF_idx = p1_idx * 6
+            K[ p0_DoF_idx : p0_DoF_idx + 6, p0_DoF_idx:  p0_DoF_idx + 6  ] += k_element_p00
+            K[ p0_DoF_idx : p0_DoF_idx + 6, p1_DoF_idx:  p1_DoF_idx + 6  ] += k_element_p01
+            K[ p1_DoF_idx : p1_DoF_idx + 6, p0_DoF_idx:  p0_DoF_idx + 6  ] += k_element_p10
+            K[ p1_DoF_idx : p1_DoF_idx + 6, p1_DoF_idx:  p1_DoF_idx + 6  ] += k_element_p11
+        return K
+
+    def get_element_global_Delta(self, connection, Delta):
+        p0_idx, p0, p1_idx, p1 = self.get_element_points( connection )
+        return np.concatenate( (Delta[ p0_idx * 6 : p0_idx * 6 + 6] , Delta[ p1_idx * 6 : p1_idx * 6 + 6 ] ) )
+        
+    def get_element_local_internal_F(self, element_idx, Delta ):
+        connection, E, nu, A, L, Iy, Iz, I_rho, J, v_temp = self.get_element_parameters( element_idx )
+        p0_idx, p0, p1_idx, p1 = self.get_element_points( connection )
+        Delta_el_global = np.concatenate( (Delta[ p0_idx * 6 : p0_idx * 6 + 6] , Delta[ p1_idx * 6 : p1_idx * 6 + 6 ] ) )
+        Gamma = self.get_transformation_matrix_3D( p0, p1, v_temp)
+        Delta_el_local = Gamma @ Delta_el_global
+        K_el_local = local_elastic_stiffness_matrix_3D_beam(E, nu, A, L, Iy, Iz, J)
+        F_el_local = K_el_local @ Delta_el_local
+        return F_el_local
+    # use the local F to calculate the local k_g
+    def get_element_local_geometric_stiffness_matrix( self, element_idx, Delta):
+        connection, E, nu, A, L, Iy, Iz, I_rho, J, v_temp = self.get_element_parameters( element_idx )
+        F_el_local = self.get_element_local_internal_F(element_idx, Delta )
+        My0 = F_el_local[4]
+        Mz0 = F_el_local[5]
+        Fx1 = F_el_local[6]
+        Mx1 = F_el_local[9]
+        My1 = F_el_local[10]
+        Mz1 = F_el_local[11]
+        k_geom_element_local = local_geometric_stiffness_matrix_3D_beam(L, A, I_rho, Fx1, Mx1, My0, Mz0, My1, Mz1)
+        return k_geom_element_local
+
+    def get_global_geometric_stiffmatrix(self, Delta):
+        K_g = np.zeros((self.n_DoFs, self.n_DoFs))
+        for element_idx in range(self.n_connectivities):
+            connection, E, nu, A, L, Iy, Iz, I_rho, J, v_temp = self.get_element_parameters(element_idx)
+            p0_idx, p0, p1_idx, p1 = self.get_element_points(connection)
+            
+            k_g_element_local = self.get_element_local_geometric_stiffness_matrix(element_idx, Delta)
+            Gamma = self.get_transformation_matrix_3D(p0, p1, v_temp)
+            k_g_element_global = Gamma.T @ k_g_element_local @ Gamma
+            k_g_element_p00 = k_g_element_global[0:6, 0:6]
+            k_g_element_p01 = k_g_element_global[0:6, 6:12]
+            k_g_element_p10 = k_g_element_global[6:12, 0:6]
+            k_g_element_p11 = k_g_element_global[6:12, 6:12]
+            
+            p0_DoF_idx = p0_idx * 6
+            p1_DoF_idx = p1_idx * 6
+            K_g[p0_DoF_idx: p0_DoF_idx + 6, p0_DoF_idx: p0_DoF_idx + 6] += k_g_element_p00
+            K_g[p0_DoF_idx: p0_DoF_idx + 6, p1_DoF_idx: p1_DoF_idx + 6] += k_g_element_p01
+            K_g[p1_DoF_idx: p1_DoF_idx + 6, p0_DoF_idx: p0_DoF_idx + 6] += k_g_element_p10
+            K_g[p1_DoF_idx: p1_DoF_idx + 6, p1_DoF_idx: p1_DoF_idx + 6] += k_g_element_p11
+        return K_g
+
