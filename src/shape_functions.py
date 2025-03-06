@@ -16,6 +16,30 @@ class ShapeFunctions:
         self.scale = scale
         self.x_local = sympy.symbols(f'x:{self.n}')
 
+    def rotation_matrix_3D(self, x1: float, y1: float, z1: float, x2: float, y2: float, z2: float, v_temp: np.ndarray = None):
+        L = np.sqrt((x2 - x1) ** 2.0 + (y2 - y1) ** 2.0 + (z2 - z1) ** 2.0)
+        lxp = (x2 - x1) / L
+        mxp = (y2 - y1) / L
+        nxp = (z2 - z1) / L
+        local_x = np.asarray([lxp, mxp, nxp])
+
+        if v_temp is None:
+            if np.isclose(lxp, 0.0) and np.isclose(mxp, 0.0):
+                v_temp = np.array([0, 1.0, 0.0])
+            else:
+                v_temp = np.array([0, 0, 1.0])
+        else:
+            check_unit_vector(v_temp)
+            check_parallel(local_x, v_temp)
+
+        local_y = np.cross(v_temp, local_x)
+        local_y = local_y / np.linalg.norm(local_y)
+        local_z = np.cross(local_x, local_y)
+        local_z = local_z / np.linalg.norm(local_z)
+        gamma = np.vstack((local_x, local_y, local_z))
+
+        return gamma
+
     def transformation_1212_matrix_3D(self, gamma):
         Gamma = np.zeros((12, 12))
         Gamma[0:3, 0:3] = gamma
@@ -74,7 +98,7 @@ class ShapeFunctions:
 
     def calc_element_interpolation(self, element_idx):
         connection, p0_idx, p0, p1_idx, p1, length, v_temp = self.get_element_info(element_idx)
-        gamma = rotation_matrix_3D(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], v_temp)
+        gamma = self.rotation_matrix_3D(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], v_temp)
         Gamma = self.transformation_1212_matrix_3D(gamma)
         eigenvector_el_global = self.get_eigenvector_element_global(p0_idx, p1_idx)
         eigenvector_el_local = Gamma @ eigenvector_el_global
@@ -102,20 +126,20 @@ class ShapeFunctions:
     def plot_element_interpolation(self, saving_dir_with_name):
         points = self.frame.points
         connectivities = self.frame.connectivities
-    
+
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-    
+
         # Plot nodes
         for point in points:
             ax.scatter(*point, color='black', label='Nodes')
-    
+
         # Plot elements
         for connection in connectivities:
             p0 = points[connection[0]]
             p1 = points[connection[1]]
             ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]], 'k--', label='Elements')
-    
+
         # Plot shape functions
         for j in range(len(connectivities)):
             element_interpolated = self.calc_element_interpolation(j)
@@ -123,7 +147,7 @@ class ShapeFunctions:
                 p0 = element_interpolated[i]
                 p1 = element_interpolated[i + 1]
                 ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]], 'r', label='Shape')
-    
+
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
@@ -134,5 +158,3 @@ class ShapeFunctions:
         plt.show()
 
         plt.savefig( saving_dir_with_name )
-    
-        
