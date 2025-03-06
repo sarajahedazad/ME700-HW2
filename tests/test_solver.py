@@ -65,6 +65,10 @@ def test_compute_critical_load():
     
     smallest_positive_eigenvalue, eigenvectors_allstructure = compute_critical_load(K_elastic, K_geometric, bcs)
     
+    # Print computed values for debugging
+    print(f"Computed smallest positive eigenvalue: {smallest_positive_eigenvalue}")
+    print(f"Computed eigenvector: {eigenvectors_allstructure}")
+    
     expected_eigenvalue = 1.95110875
     expected_eigenvector = np.array([0.0, 0.0, 0.35889959, -0.93337589])
     
