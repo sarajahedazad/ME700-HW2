@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 from geometry import *
 
+
 def test_point_creation():
     point = Point(1, 2, 3)
     assert point.x == 1
@@ -90,4 +91,16 @@ def test_existing_point():
     frame.build_frame([element1, element2])
     assert (frame.points == np.array([[0, 0, 0], [1, 1, 1]])).all()
     assert (frame.connectivities == np.array([[0, 1], [1, 0]])).all()
+
+if __name__ == "__main__":
+    test_point_creation()
+    test_element_creation()
+    test_add_point()
+    test_add_element()
+    test_build_frame()
+    test_generate_frame_directly()
+    test_duplicate_elements()
+    test_existing_point()
+    print("All tests passed!")
+
 
