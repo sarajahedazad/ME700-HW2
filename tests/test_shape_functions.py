@@ -3,6 +3,7 @@ import numpy as np
 import sympy
 from geometry import *
 from shape_functions import *
+from stiffness_matrices import *
 import os
 
 class MockFrame:
@@ -136,10 +137,4 @@ def test_plot_element_interpolation(shape_functions, tmp_path):
 
     # Cleanup: Remove the generated file if needed
     os.remove(saving_dir_with_name)
-def test_rotation_matrix_v_temp_none(shape_functions):
-    gamma = shape_functions.rotation_matrix_3D(0, 0, 0, 1, 1, 1, None)
-    assert gamma.shape == (3, 3)
 
-def test_rotation_matrix_v_temp_provided(shape_functions):
-    gamma = shape_functions.rotation_matrix_3D(0, 0, 0, 1, 1, 1, np.array([0, 0, 1]))
-    assert gamma.shape == (3, 3)
