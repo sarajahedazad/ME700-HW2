@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from geometry import *
 
 def test_point_creation():
