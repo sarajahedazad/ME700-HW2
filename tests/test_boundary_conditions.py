@@ -1,106 +1,93 @@
 import numpy as np
-import geometry as geom
+from geometry import *
 from boundary_conditions import *
 
-def test_point_creation():
-    point = Point(1, 2, 3)
-    assert point.x == 1
-    assert point.y == 2
-    assert point.z == 3
-    assert (point.coords == np.array([1, 2, 3])).all()
+import numpy as np
+import geometry as geom
 
-def test_element_creation():
-    p0 = Point(0, 0, 0)
-    p1 = Point(1, 1, 1)
-    element = Element(p0, p1, 210e9, 0.3, 0.01, 1e-6, 1e-6, 1e-6, 1e-6)
-    assert element.p0 == p0
-    assert element.p1 == p1
-    assert np.isclose(element.L, np.sqrt(3))
-
-def test_add_point():
-    frame = Frame()
-    point = frame.add_point(1, 2, 3)
-    assert point.x == 1
-    assert point.y == 2
-    assert point.z == 3
-
-def test_add_element():
-    frame = Frame()
-    p0 = frame.add_point(0, 0, 0)
-    p1 = frame.add_point(1, 1, 1)
-    element = frame.add_element(p0, p1, 210e9, 0.3, 0.01, 1e-6, 1e-6, 1e-6, 1e-6)
-    assert element.p0 == p0
-    assert element.p1 == p1
-    assert np.isclose(element.L, np.sqrt(3))
-
-def test_build_frame():
-    frame = Frame()
+def setup_frame():
+    frame = geom.Frame()
     p0 = frame.add_point(0, 0, 0)
     p1 = frame.add_point(1, 1, 1)
     element = frame.add_element(p0, p1, 210e9, 0.3, 0.01, 1e-6, 1e-6, 1e-6, 1e-6)
     frame.build_frame([element])
-    assert (frame.points == np.array([[0, 0, 0], [1, 1, 1]])).all()
-    assert (frame.connectivities == np.array([[0, 1]])).all()
+    return frame
 
-def test_generate_frame_directly():
-    points = np.array([[0, 0, 0], [1, 1, 1]])
-    connectivities = np.array([[0, 1]])
-    E_array = np.array([210e9])
-    nu_array = np.array([0.3])
-    A_array = np.array([0.01])
-    Iy_array = np.array([1e-6])
-    Iz_array = np.array([1e-6])
-    I_rho_array = np.array([1e-6])
-    J_array = np.array([1e-6])
-    v_temp_array = np.array([None])
+def test_add_disp_bound_xyz():
+    frame = setup_frame()
+    bc = BoundaryConditions(frame)
+    bc.add_disp_bound_xyz([0, 0, 0], 1, 2, 3)
+    assert bc.BCs_disp_indices == [0, 1, 2]
+    assert bc.BCs_disp_values == [1, 2, 3]
 
-    frame = Frame()
-    frame.generate_frame_directly(points, connectivities, E_array, nu_array, A_array, Iy_array, Iz_array, I_rho_array, J_array, v_temp_array)
-    
-    assert (frame.points == points).all()
-    assert (frame.connectivities == np.array([[0, 1]])).all()
-    assert (frame.E_array == E_array).all()
-    assert (frame.nu_array == nu_array).all()
-    assert (frame.A_array == A_array).all()
-    assert (frame.Iy_array == Iy_array).all()
-    assert (frame.Iz_array == Iz_array).all()
-    assert (frame.I_rho_array == I_rho_array).all()
-    assert (frame.J_array == J_array).all()
-    assert (frame.v_temp_array == v_temp_array).all()
-    assert np.isclose(frame.L_array, np.sqrt(3)).all()
+def test_add_disp_bound_x():
+    frame = setup_frame()
+    bc = BoundaryConditions(frame)
+    bc.add_disp_bound_x([0, 0, 0], 1)
+    assert bc.BCs_disp_indices == [0]
+    assert bc.BCs_disp_values == [1]
 
-def test_duplicate_elements():
-    frame = Frame()
-    p0 = frame.add_point(0, 0, 0)
-    p1 = frame.add_point(1, 1, 1)
-    element1 = frame.add_element(p0, p1, 210e9, 0.3, 0.01, 1e-6, 1e-6, 1e-6, 1e-6)
-    element2 = frame.add_element(p0, p1, 210e9, 0.3, 0.01, 1e-6, 1e-6, 1e-6, 1e-6)
+def test_add_rot_bound_xyz():
+    frame = setup_frame()
+    bc = BoundaryConditions(frame)
+    bc.add_rot_bound_xyz([0, 0, 0], 1, 2, 3)
+    assert bc.BCs_rot_indices == [3, 4, 5]
+    assert bc.BCs_rot_values == [1, 2, 3]
+
+def test_add_force_bound_xyz():
+    frame = setup_frame()
+    bc = BoundaryConditions(frame)
+    bc.add_force_bound_xyz([0, 0, 0], 1, 2, 3)
+    assert bc.BCs_force_indices == [0, 1, 2]
+    assert bc.BCs_force_values == [1, 2, 3]
+
+def test_add_momentum_bound_xyz():
+    frame = setup_frame()
+    bc = BoundaryConditions(frame)
+    bc.add_momentum_bound_xyz([0, 0, 0], 1, 2, 3)
+    assert bc.BCs_momentum_indices == [3, 4, 5]
+    assert bc.BCs_momentum_values == [1, 2, 3]
+
+def test_validate_bounds_overdefined():
+    frame = setup_frame()
+    bc = BoundaryConditions(frame)
+    bc.BCs_supported_indices = [0, 1, 2]
+    bc.BCs_free_indices = [2, 3, 4]
     try:
-        frame.build_frame([element1, element2])
-    except DuplicationError:
-        print("DuplicationError successfully raised")
+        bc.validate_bounds()
+    except OverDefinedError:
+        print("OverDefinedError successfully raised")
 
-def test_no_duplicate_elements():
-    frame = Frame()
-    p0 = frame.add_point(0, 0, 0)
-    p1 = frame.add_point(1, 1, 1)
-    p2 = frame.add_point(2, 2, 2)
-    element1 = frame.add_element(p0, p1, 210e9, 0.3, 0.01, 1e-6, 1e-6, 1e-6, 1e-6)
-    element2 = frame.add_element(p1, p2, 210e9, 0.3, 0.01, 1e-6, 1e-6, 1e-6, 1e-6)
-    frame.build_frame([element1, element2])
-    assert (frame.points == np.array([[0, 0, 0], [1, 1, 1], [2, 2, 2]])).all()
-    assert (frame.connectivities == np.array([[0, 1], [1, 2]])).all()
+def test_validate_bounds_underdefined():
+    frame = setup_frame()
+    bc = BoundaryConditions(frame)
+    bc.BCs_supported_indices = [0, 1, 2]
+    bc.BCs_free_indices = [3, 4, 5]
+    bc.n_DoFs = 12
+    try:
+        bc.validate_bounds()
+    except UnderDefinedError:
+        print("UnderDefinedError successfully raised")
 
-if __name__ == "__main__":
-    test_point_creation()
-    test_element_creation()
-    test_add_point()
-    test_add_element()
-    test_build_frame()
-    test_generate_frame_directly()
-    test_duplicate_elements()
-    test_no_duplicate_elements()
-    print("All tests passed!")
+def test_set_up_bounds():
+    frame = setup_frame()
+    bc = BoundaryConditions(frame)
+    bc.BCs_disp_indices = [0, 1, 2]
+    bc.BCs_disp_values = [1, 2, 3]
+    bc.BCs_rot_indices = [3, 4, 5]
+    bc.BCs_rot_values = [4, 5, 6]
+    # Ensure no overlap between supported and free indices
+    bc.BCs_force_indices = [6, 7, 8]
+    bc.BCs_force_values = [1, 2, 3]
+    bc.BCs_momentum_indices = [9, 10, 11]
+    bc.BCs_momentum_values = [4, 5, 6]
+    bc.set_up_bounds()
+    assert (bc.BCs_supported_indices == np.array([0, 1, 2, 3, 4, 5])).all()
+    assert (bc.BCs_Delta_supported_values == np.array([1, 2, 3, 4, 5, 6])).all()
+    assert (bc.BCs_free_indices == np.array([6, 7, 8, 9, 10, 11])).all()
+    assert (bc.BCs_F_free_values == np.array([1, 2, 3, 4, 5, 6])).all()
+
+
 
 
 
