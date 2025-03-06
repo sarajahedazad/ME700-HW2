@@ -52,7 +52,7 @@ def test_generate_frame_directly():
     Iz_array = np.array([1e-6])
     I_rho_array = np.array([1e-6])
     J_array = np.array([1e-6])
-    v_temp_array = np.array([None])
+    v_temp_array = None
 
     frame = Frame()
     frame.generate_frame_directly(points, connectivities, E_array, nu_array, A_array, Iy_array, Iz_array, I_rho_array, J_array, v_temp_array)
@@ -66,6 +66,8 @@ def test_generate_frame_directly():
     assert (frame.Iz_array == Iz_array).all()
     assert (frame.I_rho_array == I_rho_array).all()
     assert (frame.J_array == J_array).all()
-    assert (frame.v_temp_array == v_temp_array).all()
-    assert np.isclose(frame.L_array, np.sqrt(3)).all
-
+    if v_temp_array is not None:
+        assert (frame.v_temp_array == v_temp_array).all()
+    else:
+        assert (frame.v_temp_array == np.zeros(len(E_array))).all()
+    assert np.isclose(frame.L_array, np.sqrt(3)).all()
