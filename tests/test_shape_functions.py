@@ -124,6 +124,19 @@ def test_rotation_matrix_v_temp_none(shape_functions):
     gamma = shape_functions.rotation_matrix_3D(0, 0, 0, 1, 1, 1, None)
     assert gamma.shape == (3, 3)
 
+def test_plot_element_interpolation(shape_functions, tmp_path):
+    # We use pytest's tmp_path fixture to get a temporary file name.
+    saving_dir_with_name = tmp_path / "test_plot.png"
+    
+    # Call the plot method (this will display a plot; in a CI environment, the interactive window is usually suppressed).
+    shape_functions.plot_element_interpolation(str(saving_dir_with_name))
+    
+    # Check that the file was indeed created.
+    assert saving_dir_with_name.exists(), "Plot file was not created."
+    
+    # Optionally: remove the file afterward.
+    os.remove(saving_dir_with_name)
+
 def test_rotation_matrix_v_temp_provided(shape_functions):
     gamma = shape_functions.rotation_matrix_3D(0, 0, 0, 1, 1, 1, np.array([0, 0, 1]))
     assert gamma.shape == (3, 3)
