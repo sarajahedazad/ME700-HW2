@@ -3,6 +3,7 @@ import numpy as np
 import sympy
 from geometry import *
 from shape_functions import *
+import os
 
 class MockFrame:
     def __init__(self):
