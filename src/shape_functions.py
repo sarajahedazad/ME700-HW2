@@ -134,20 +134,37 @@ class ShapeFunctions:
         interpolated_points = interpolate_two_points(p0, p1, self.n - 1)
         return interpolated_points + uvw_global_element.reshape(-1, 3)
 
-    def plot_element_interpolation(self):
+    def plot_element_interpolation(self, saving_dir_with_name):
         points = self.frame.points
         connectivities = self.frame.connectivities
-        n_connectivities = len(connectivities)
+    
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-
-        ax.scatter(*points[0], color='black', label='Nodes')
-        for point in points[1:]:
-            ax.scatter(*point, color='black')
-        p0 = points[connectivities[0][0]]
-        p1 = points[connectivities[0][1]]
-        ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]], 'k--', label='Elements')
-        for connection in connectivities[1:]:
+    
+        # Plot nodes
+        for point in points:
+            ax.scatter(*point, color='black', label='Nodes')
+    
+        # Plot elements
+        for connection in connectivities:
             p0 = points[connection[0]]
             p1 = points[connection[1]]
-            ax.plot([p0[0], p1[0]], 
+            ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]], 'k--', label='Elements')
+    
+        # Plot shape functions
+        for j in range(len(connectivities)):
+            element_interpolated = self.calc_element_interpolation(j)
+            for i in range(len(element_interpolated) - 1):
+                p0 = element_interpolated[i]
+                p1 = element_interpolated[i + 1]
+                ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]], 'r', label='Shape')
+    
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+        ax.legend()
+        ax.grid(True)
+        ax.set_aspect('equal')
+    
+        plt.show()
+        
