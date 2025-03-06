@@ -123,8 +123,6 @@ class Frame:
         self.J_array = J_array
         
         # Ensure v_temp_array is a numeric type
-        if v_temp_array is None:
-            v_temp_array = np.zeros(len(E_array))
         self.v_temp_array = v_temp_array
         
         self.L_array = self.calc_all_connections_lengths()
