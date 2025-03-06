@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from stiffness_matrices import StiffnessMatrices, local_elastic_stiffness_matrix_3D_beam, check_unit_vector, check_parallel, rotation_matrix_3D
+from stiffness_matrices import *
 
 class MockFrame:
     def __init__(self):
