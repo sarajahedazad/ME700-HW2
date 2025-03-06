@@ -57,7 +57,70 @@ def test_linear_N1(shape_functions):
     expr = shape_functions.linear_N1(length)
     assert expr.shape == (shape_functions.n, 1)
 
+def test_linear_N2(shape_functions):
+    length = 1
+    expr = shape_functions.linear_N2(length)
+    assert expr.shape == (shape_functions.n, 1)
+    x0 = np.linspace(0, length, shape_functions.n)
+    result = shape_functions.evaluate(expr, x0)
+    expected = np.array([xi / length for xi in x0])
+    np.testing.assert_array_almost_equal(result, expected)
+
 def test_hermite_N1(shape_functions):
     length = 1
     expr = shape_functions.hermite_N1(length)
     assert expr.shape == (shape_functions.n, 1)
+
+def test_hermite_N2(shape_functions):
+    length = 1
+    expr = shape_functions.hermite_N2(length)
+    assert expr.shape == (shape_functions.n, 1)
+    x0 = np.linspace(0, length, shape_functions.n)
+    result = shape_functions.evaluate(expr, x0)
+    expected = np.array([3 * (xi / length) ** 2 - 2 * (xi / length) ** 3 for xi in x0])
+    np.testing.assert_array_almost_equal(result, expected)
+
+def test_hermite_N3(shape_functions):
+    length = 1
+    expr = shape_functions.hermite_N3(length)
+    assert expr.shape == (shape_functions.n, 1)
+    x0 = np.linspace(0, length, shape_functions.n)
+    result = shape_functions.evaluate(expr, x0)
+    expected = np.array([xi * (1 - xi / length) ** 2 for xi in x0])
+    np.testing.assert_array_almost_equal(result, expected)
+
+def test_hermite_N4(shape_functions):
+    length = 1
+    expr = shape_functions.hermite_N4(length)
+    assert expr.shape == (shape_functions.n, 1)
+    x0 = np.linspace(0, length, shape_functions.n)
+    result = shape_functions.evaluate(expr, x0)
+    expected = np.array([xi * ((xi / length) ** 2 - xi / length) for xi in x0])
+    np.testing.assert_array_almost_equal(result, expected)
+
+def test_get_element_info(shape_functions):
+    connection, p0_idx, p0, p1_idx, p1, length, v_temp = shape_functions.get_element_info(0)
+    assert connection == (0, 1)
+    assert p0_idx == 0
+    np.testing.assert_array_almost_equal(p0, [0, 0, 0])
+    assert p1_idx == 1
+    np.testing.assert_array_almost_equal(p1, [1, 1, 1])
+    assert length == np.sqrt(3)
+    np.testing.assert_array_almost_equal(v_temp, [0, 0, 1])
+
+def test_get_eigenvector_element_global(shape_functions):
+    eigenvector_element_global = shape_functions.get_eigenvector_element_global(0, 1)
+    expected = np.zeros(12)
+    np.testing.assert_array_almost_equal(eigenvector_element_global, expected)
+
+def test_calc_eigenvector_element_local(shape_functions):
+    eigenvector_element_local = shape_functions.calc_eigenvector_element_local(0)
+    assert eigenvector_element_local.shape == (12,)
+    np.testing.assert_array_almost_equal(eigenvector_element_local, np.zeros(12))
+
+def test_calc_element_interpolation(shape_functions):
+    interpolated_points = shape_functions.calc_element_interpolation(0)
+    assert interpolated_points.shape == (shape_functions.n, 3)
+    expected = np.linspace([0, 0, 0], [1, 1, 1], num=shape_functions.n)
+    np.testing.assert_array_almost_equal(interpolated_points, expected)
+
