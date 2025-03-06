@@ -1,0 +1,4 @@
+ChatGPT and Microsoft copilot: cleaning and commenting on code files.
+ChatGPT: implementing partitioning in the solver and understanding how to extract eigenvalue/eigenvectors. solver.py had the most ammount of AI contect in it among the files in src.
+Microsoft copilot: writing test functions.
+ChatGPT: writing the theoritical part and instructions in README file.
