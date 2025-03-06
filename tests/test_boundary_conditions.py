@@ -2,6 +2,9 @@ import numpy as np
 import geometry as geom
 from boundary_conditions import *
 
+import numpy as np
+import geometry as geom
+
 def setup_frame():
     frame = geom.Frame()
     p0 = frame.add_point(0, 0, 0)
@@ -73,26 +76,17 @@ def test_set_up_bounds():
     bc.BCs_disp_values = [1, 2, 3]
     bc.BCs_rot_indices = [3, 4, 5]
     bc.BCs_rot_values = [4, 5, 6]
-    bc.BCs_force_indices = [0, 1, 2]
+    # Ensure no overlap between supported and free indices
+    bc.BCs_force_indices = [6, 7, 8]
     bc.BCs_force_values = [1, 2, 3]
-    bc.BCs_momentum_indices = [3, 4, 5]
+    bc.BCs_momentum_indices = [9, 10, 11]
     bc.BCs_momentum_values = [4, 5, 6]
     bc.set_up_bounds()
     assert (bc.BCs_supported_indices == np.array([0, 1, 2, 3, 4, 5])).all()
     assert (bc.BCs_Delta_supported_values == np.array([1, 2, 3, 4, 5, 6])).all()
-    assert (bc.BCs_free_indices == np.array([0, 1, 2, 3, 4, 5])).all()
+    assert (bc.BCs_free_indices == np.array([6, 7, 8, 9, 10, 11])).all()
     assert (bc.BCs_F_free_values == np.array([1, 2, 3, 4, 5, 6])).all()
 
-if __name__ == "__main__":
-    test_add_disp_bound_xyz()
-    test_add_disp_bound_x()
-    test_add_rot_bound_xyz()
-    test_add_force_bound_xyz()
-    test_add_momentum_bound_xyz()
-    test_validate_bounds_overdefined()
-    test_validate_bounds_underdefined()
-    test_set_up_bounds()
-    print("All tests passed!")
 
 
 
