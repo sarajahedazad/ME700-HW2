@@ -1,4 +1,5 @@
 [![codecov](https://codecov.io/gh/sarajahedazad/ME700-HW2/graph/badge.svg?token=bECtu6QvVu)](https://codecov.io/gh/sarajahedazad/ME700-HW2)
+[![Run Tests](https://github.com/sarajahedazad/ME700-HW2/actions/workflows/test.yml/badge.svg)](https://github.com/sarajahedazad/ME700-HW2/actions/workflows/test.yml)
 
 # ME700-HW2
 **Important note:** This repository is a work in progress and not in its final version.
