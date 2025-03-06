@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/sarajahedazad/ME700-HW2/graph/badge.svg?token=bECtu6QvVu)](https://codecov.io/gh/sarajahedazad/ME700-HW2)
+
 # ME700-HW2
 **Important note:** This repository is a work in progress and not in its final version.
 
