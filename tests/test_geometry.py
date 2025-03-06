@@ -91,13 +91,3 @@ def test_no_duplicate_elements():
     assert (frame.points == np.array([[0, 0, 0], [1, 1, 1], [2, 2, 2]])).all()
     assert (frame.connectivities == np.array([[0, 1], [1, 2]])).all()
 
-if __name__ == "__main__":
-    test_point_creation()
-    test_element_creation()
-    test_add_point()
-    test_add_element()
-    test_build_frame()
-    test_generate_frame_directly()
-    test_duplicate_elements()
-    test_no_duplicate_elements()
-    print("All tests passed!")
