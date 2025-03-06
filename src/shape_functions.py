@@ -3,6 +3,24 @@ import matplotlib.pyplot as plt
 import sympy
 from geometry import *
 
+# from Dr. Lejeune's course material
+def check_unit_vector(vec: np.ndarray):
+    """
+    """
+    if np.isclose(np.linalg.norm(vec), 1.0):
+        return
+    else:
+        raise ValueError("Expected a unit vector for reference vector.")
+
+# from Dr. Lejeune's course material
+def check_parallel(vec_1: np.ndarray, vec_2: np.ndarray):
+    """
+    """
+    if np.isclose(np.linalg.norm(np.cross(vec_1, vec_2)), 0.0):
+        raise ValueError("Reference vector is parallel to beam axis.")
+    else:
+        return
+
 def interpolate_two_points(p0, p1, n):
     points_lst = [tuple(p0 + (p1 - p0) * i / n) for i in range(n + 1)]
     return np.array(points_lst)
