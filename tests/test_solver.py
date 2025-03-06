@@ -75,5 +75,17 @@ def test_compute_critical_load():
     assert np.isclose(smallest_positive_eigenvalue, expected_eigenvalue, rtol=1e-5)
     assert np.allclose(eigenvectors_allstructure, expected_eigenvector, rtol=1e-5)
 
-if __name__ == "__main__":
-    pytest.main()
+def test_compute_critical_load_no_positive_eigenvalue():
+    # Create a scenario where no positive real eigenvalue is found
+    K_elastic = np.array([[10, 0, 0, 0],
+                          [0, 10, 0, 0],
+                          [0, 0, 10, 0],
+                          [0, 0, 0, 10]])
+    K_geometric = np.array([[2, 1, 1, 1],
+                            [1, 2, 1, 1],
+                            [1, 1, 2, 1],
+                            [1, 1, 1, 2]])
+    bcs = MockBCS()
+    
+    with pytest.raises(ValueError, match="No positive real eigenvalue found."):
+        compute_critical_load(K_elastic, K_geometric, bcs)
