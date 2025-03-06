@@ -1,5 +1,6 @@
 import numpy as np
 import geometry as geom
+from boundary_conditions import *
 
 def test_add_disp_bound_xyz():
     frame = geom.Frame()
