@@ -87,8 +87,6 @@ def compute_critical_load(K_elastic, K_geometric, bcs):
     smallest_positive_eigenvalue = positive_eigenvalues[min_index]
     corresponding_eigenvector = positive_eigenvectors[:, min_index]
 
-    print(positive_eigenvalues.shape, corresponding_eigenvector.shape, positive_eigenvectors.shape)
-
     eigenvectors_allstructure = np.zeros(n)
     eigenvectors_allstructure[bcs.BCs_free_indices] = corresponding_eigenvector
 
