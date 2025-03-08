@@ -86,8 +86,8 @@ class ShapeFunctions:
         v_local_part1 = v_p0 * self.evaluate(self.hermite_N1(length), x_local_val) + v_p1 * self.evaluate(self.hermite_N2(length), x_local_val)
         v_local_part2 = theta_p0_z * self.evaluate(self.hermite_N3(length), x_local_val) + theta_p1_z * self.evaluate(self.hermite_N4(length), x_local_val)
         v_local = v_local_part1 + v_local_part2
-        w_local_part1 = w_p0 * self.evaluate(self.hermite_N1(length), x_local_val) + w_p1 * self.evaluate(self.hermite_N2(length), x_local_val)
-        w_local_part2 = theta_p0_y * self.evaluate(self.hermite_N3(length), x_local_val) + theta_p1_y * self.evaluate(self.hermite_N4(length), x_local_val)
+        w_local_part1 =  w_p0 * self.evaluate(self.hermite_N1(length), x_local_val) + w_p1 * self.evaluate(self.hermite_N2(length), x_local_val)
+        w_local_part2 =   theta_p0_y * self.evaluate(self.hermite_N3(length), x_local_val) + theta_p1_y * self.evaluate(self.hermite_N4(length), x_local_val)
         w_local = w_local_part1 + w_local_part2
 
         stacked = np.stack((self.scale * u_local, self.scale * v_local, self.scale * w_local))
@@ -114,10 +114,13 @@ class ShapeFunctions:
                 ax.scatter(*point, color='black')
     
         # Plot elements
-        for connection in connectivities:
+        for i, connection in enumerate( connectivities ):
             p0 = points[connection[0]]
             p1 = points[connection[1]]
-            ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]], 'k--', label='Elements')
+            if i == 0:
+                ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]], 'k--', label='Elements')
+            else:
+               ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]], 'k--' )
     
         # Plot shape functions
         for j in range(len(connectivities)):
@@ -125,7 +128,7 @@ class ShapeFunctions:
             for i in range(len(element_interpolated) - 1):
                 p0 = element_interpolated[i]
                 p1 = element_interpolated[i + 1]
-                if i == 0 :
+                if i == 0 and j == 0:
                     ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]], 'r', label='Interpolated Shape')
                 else:
                     ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]], 'r' )
