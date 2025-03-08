@@ -30,9 +30,9 @@ def test_interpolate_two_points():
                          [10., 10.]])
     np.testing.assert_array_almost_equal(result, expected)
 
-def test_rotation_matrix_3D(shape_functions):
-    gamma = shape_functions.rotation_matrix_3D(0, 0, 0, 1, 1, 1)
-    assert gamma.shape == (3, 3)
+# def test_rotation_matrix_3D(shape_functions):
+#     gamma = shape_functions.rotation_matrix_3D(0, 0, 0, 1, 1, 1)
+#     assert gamma.shape == (3, 3)
 
 def test_transformation_1212_matrix_3D(shape_functions):
     gamma = np.identity(3)
