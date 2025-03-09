@@ -51,7 +51,7 @@ The Direct Stiffness Method (DSM) is a fundamental approach in structural analys
   $K_{global} = \Gamma^T K_{local} \Gamma$
   
 
-  where $T$ is the transformation matrix, $K_{local}$ is the element's stiffness matrix in its local coordinates, and $T^T$ denotes the transpose of $T$.
+  where $\Gamma$ is the transformation matrix, $K_{local}$ is the element's stiffness matrix in its local coordinates, and $\Gamma^T$ denotes the transpose of $\Gamma$.
 
 - **Displacement Vector ($\Delta$)**: It contains the displacements and rotations at each node of the structure. Nodes are categorized as either supported (where displacements are known and typically zero) or free (where displacements are unknown and need to be calculated).
 
