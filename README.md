@@ -48,7 +48,7 @@ The Direct Stiffness Method (DSM) is a fundamental approach in structural analys
 - **Elastic Stiffness Matrix ($K$)**: This matrix represents the rigidity of the structure and is assembled from individual element stiffness matrices. The transformation matrices are used to align local degrees of freedom with the global system. The general form of the stiffness matrix for an element in the global coordinate system can be expressed as:
 
   
-  $K_{global} = T^T K_{local} T$
+  $K_{global} = \Gamma^T K_{local} \Gamma$
   
 
   where $T$ is the transformation matrix, $K_{local}$ is the element's stiffness matrix in its local coordinates, and $T^T$ denotes the transpose of $T$.
@@ -71,7 +71,6 @@ For stability analysis, the focus shifts to the geometric stiffness matrix $K_g$
 
 - **Geometric Stiffness Matrix ($K_g$)**: This matrix accounts for the effects of preloading on the structure. It captures the stiffness changes due to the applied loads.
   
-
 
 
 - **Elastic Critical Load and Eigenvalue Analysis**: The critical load is determined using eigenvalue analysis of the combined stiffness matrix $K + \lambda K_g$, where $\lambda$ represents a load factor. The smallest eigenvalue from this analysis gives the critical load factor, indicating the load level at which the structure is likely to buckle.
