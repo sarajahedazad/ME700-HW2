@@ -87,7 +87,7 @@ class ShapeFunctions:
         v_local_part2 = theta_p0_z * self.evaluate(self.hermite_N3(length), x_local_val) + theta_p1_z * self.evaluate(self.hermite_N4(length), x_local_val)
         v_local = v_local_part1 + v_local_part2
         w_local_part1 =  w_p0 * self.evaluate(self.hermite_N1(length), x_local_val) + w_p1 * self.evaluate(self.hermite_N2(length), x_local_val)
-        w_local_part2 =   theta_p0_y * self.evaluate(self.hermite_N3(length), x_local_val) + theta_p1_y * self.evaluate(self.hermite_N4(length), x_local_val)
+        w_local_part2 =   -theta_p0_y * self.evaluate(self.hermite_N3(length), x_local_val) - theta_p1_y * self.evaluate(self.hermite_N4(length), x_local_val)
         w_local = w_local_part1 + w_local_part2
 
         stacked = np.stack((self.scale * u_local, self.scale * v_local, self.scale * w_local))
