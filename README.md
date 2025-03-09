@@ -82,3 +82,75 @@ For stability analysis, the focus shifts to the geometric stiffness matrix $K_g$
 This detailed theoretical framework supports the functionalities developed in the matrix structural analysis solver, enabling comprehensive structural analysis and advanced stability assessments of 3D frame structures.
 
 
+---
+
+### Conda environment, install, and testing <a name="install"></a>
+_This section is copied and pasted from [Lejeune's Lab Graduate Course Materials: Bisection Method](https://github.com/Lejeune-Lab-Graduate-Course-Materials/bisection-method.git)_
+
+To install this package, please begin by setting up a conda environment (mamba also works):
+```bash
+conda create --name hw1-env python=3.12
+```
+Once the environment has been created, activate it:
+
+```bash
+conda activate hw1-env
+```
+Double check that python is version 3.12 in the environment:
+```bash
+python --version
+```
+Ensure that pip is using the most up to date version of setuptools:
+```bash
+pip install --upgrade pip setuptools wheel
+```
+Create an editable install of the bisection method code (note: you must be in the correct directory):
+```bash
+pip install -e .
+```
+Test that the code is working with pytest:
+```bash
+pytest -v --cov=hw1 --cov-report term-missing
+```
+Code coverage should be 100%. Now you are prepared to write your own code based on this method and/or run the tutorial. 
+
+
+If you are using VSCode to run this code, don't forget to set VSCode virtual environment to hw1-env.
+
+If you would like the open one of the tutorials located in the `tutorials` folder ( for example, `tutorial_elastoplasticity.ipynb`) as a Jupyter notebook in the browser, you might need to install Jupyter notebook in your conda environment as well:
+```bash
+pip install jupyter
+```
+```bash
+cd tutorials/
+```
+```bash
+jupyter notebook tutorial_elastoplasticity.ipynb
+```
+### An alternative way to test the codes without installing the package <a name="alter"></a>  
+elow is an example that demonstrates how to use `elasto_plasticity.py` without installation. Similarly, you can employ `bisection_method.py` and `newton_solver.py`.
+- Step 1: Download the `elasto_plasity.py` file from the folder `src/hw1`([here](https://github.com/sarajahedazad/ME700-HW1/tree/main/src/hw1)). Place it in the same folder as your working directory.
+- Step 2: Create a python file in that folder and write your example in that file. You can import the `elastoplasticity` with the following line:
+`import elasto_plasticity as ep`
+- Step 3: Run your code an enjoy!
+Here is an example that demonstrates how you can test `elasto_plasticity.py` file (it should be in the same folder as the python file that you intend to run):
+
+```
+import numpy as np
+import elasto_plasticity as ep
+
+E, H, Y= 1000, 111, 10
+Y0 = Y
+ep_iso = ep.ElastoPlasticIsoHard( E, H, Y0)
+ep_k = ep.ElastoPlasticKinematicHard( E, H, Y)
+sigma0 = 0
+epsilon_arr = np.concatenate( (np.linspace(0, 0.02, 100), np.linspace(0.02, 0, 100), np.linspace(0, -0.02, 100), np.linspace(-0.02, 0, 100), np.linspace(0, 0.04, 200), np.linspace(0.04, 0, 200)))
+
+ep.plot_total_applied_strain( epsilon_arr )
+ep_iso.plot_stress_strain_curve(epsilon_arr, sigma0)
+ep_k.plot_stress_strain_curve(epsilon_arr, sigma0)
+```
+
+
+* [Lejeune Lab Graduate Course Materials: Bisection-Method](https://github.com/Lejeune-Lab-Graduate-Course-Materials/bisection-method/tree/main) 
+* ChatGPT: was used for completing the documentation. More details about the AI use is provided in the `assignment_1_genAIuse.txt`.
