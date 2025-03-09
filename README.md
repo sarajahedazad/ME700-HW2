@@ -89,12 +89,12 @@ _This section is copied and pasted from [Lejeune's Lab Graduate Course Materials
 
 To install this package, please begin by setting up a conda environment (mamba also works):
 ```bash
-conda create --name hw1-env python=3.12
+conda create --name hw2-env python=3.12
 ```
 Once the environment has been created, activate it:
 
 ```bash
-conda activate hw1-env
+conda activate hw2-env
 ```
 Double check that python is version 3.12 in the environment:
 ```bash
@@ -104,18 +104,18 @@ Ensure that pip is using the most up to date version of setuptools:
 ```bash
 pip install --upgrade pip setuptools wheel
 ```
-Create an editable install of the bisection method code (note: you must be in the correct directory):
+Create an editable install of the codes (note: you must be in the correct directory):
 ```bash
 pip install -e .
 ```
 Test that the code is working with pytest:
 ```bash
-pytest -v --cov=hw1 --cov-report term-missing
+pytest -v --cov=src --cov-report term-missing
 ```
 Code coverage should be 100%. Now you are prepared to write your own code based on this method and/or run the tutorial. 
 
 
-If you are using VSCode to run this code, don't forget to set VSCode virtual environment to hw1-env.
+If you are using VSCode to run this code, don't forget to set VSCode virtual environment to hw2-env.
 
 If you would like the open one of the tutorials located in the `tutorials` folder ( for example, `tutorial_elastoplasticity.ipynb`) as a Jupyter notebook in the browser, you might need to install Jupyter notebook in your conda environment as well:
 ```bash
@@ -125,30 +125,101 @@ pip install jupyter
 cd tutorials/
 ```
 ```bash
-jupyter notebook tutorial_elastoplasticity.ipynb
+jupyter notebook tutorials_matrix_structural_analysis.ipynb
 ```
 ### An alternative way to test the codes without installing the package <a name="alter"></a>  
-elow is an example that demonstrates how to use `elasto_plasticity.py` without installation. Similarly, you can employ `bisection_method.py` and `newton_solver.py`.
-- Step 1: Download the `elasto_plasity.py` file from the folder `src/hw1`([here](https://github.com/sarajahedazad/ME700-HW1/tree/main/src/hw1)). Place it in the same folder as your working directory.
-- Step 2: Create a python file in that folder and write your example in that file. You can import the `elastoplasticity` with the following line:
-`import elasto_plasticity as ep`
-- Step 3: Run your code an enjoy!
-Here is an example that demonstrates how you can test `elasto_plasticity.py` file (it should be in the same folder as the python file that you intend to run):
+Below is an example that demonstrates how to use the codes in src without installation.  
+- Step 1: Download the `.py` files from the folder `src`([here](https://github.com/sarajahedazad/ME700-HW2/tree/main/src)). Place them in the same folder as your working directory.
+- Step 2: Create a python file in that folder and write your example in that file. You can import the mdules and functions in those files with the following line:
+`from boundary_conditions import *`
+- Step 3: Run your code and enjoy!
+Here is an example that demonstrates how you can use the files in `src` folder (they should be in the same folder as the python file that you intend to run):
 
 ```
 import numpy as np
-import elasto_plasticity as ep
+from geometry import *
+from boundary_conditions import *
+from stiffness_matrices import *
+from solver import *
+from shape_functions import * 
+'''-------------------------------------------------------------'''
+'''------------------Defining The Structure---------------------'''
+'''-------------------------------------------------------------'''
+#------Parameters-------
+r = 1
+E = 1000
+nu = 0.3
+A = np.pi * r **2
+Iy = np.pi * r ** 4 / 4
+Iz = np.pi * r ** 4 / 4
+I_rho = np.pi * r ** 4 / 2
+J = np.pi * r ** 4 / 2
+L = 10 
+P_applied = 1
 
-E, H, Y= 1000, 111, 10
-Y0 = Y
-ep_iso = ep.ElastoPlasticIsoHard( E, H, Y0)
-ep_k = ep.ElastoPlasticKinematicHard( E, H, Y)
-sigma0 = 0
-epsilon_arr = np.concatenate( (np.linspace(0, 0.02, 100), np.linspace(0.02, 0, 100), np.linspace(0, -0.02, 100), np.linspace(-0.02, 0, 100), np.linspace(0, 0.04, 200), np.linspace(0.04, 0, 200)))
+#-----Building the Frame-----
+frame = Frame()
+p0 = frame.add_point(0, 0, 0)
+p1 = frame.add_point(30, 40, 0)
 
-ep.plot_total_applied_strain( epsilon_arr )
-ep_iso.plot_stress_strain_curve(epsilon_arr, sigma0)
-ep_k.plot_stress_strain_curve(epsilon_arr, sigma0)
+el0 = frame.add_element( p0, p1, E, nu, A, Iy, Iz, I_rho, J )
+element_lst = [el0]
+frame.build_frame( element_lst )
+'''-------------------------------------------------------------'''
+'''-------------------Boundary Conditions-----------------------'''
+'''-------------------------------------------------------------'''
+bcs = BoundaryConditions( frame )
+# displacement bounds
+bcs.add_disp_bound_xyz( [0, 0, 0], 0, 0, 0 ) # you can also use bcs.add_disp_bound_xyz( [p0.coords, 0, 0, 0 ) 
+
+# rotation bounds
+bcs.add_rot_bound_xyz( [0, 0, 0], 0, 0, 0 )
+
+# force bounds
+bcs.add_force_bound_xyz( [30, 40, 0], - 3 /5 , -4/5, 0 )
+
+# momentum bounds
+bcs.add_momentum_bound_xyz( [30, 40, 0], 0, 0, 0 )
+
+# we have to set up the bounds in the end
+bcs.set_up_bounds()
+
+'''-------------------------------------------------------------'''
+'''-----------Build the Global Stiffness Matrix-----------------'''
+'''-------------------------------------------------------------'''
+stiffmat = StiffnessMatrices( frame )
+K = stiffmat.get_global_elastic_stiffmatrix()
+
+
+'''-------------------------------------------------------------'''
+'''-------------------Solving for unknowns----------------------'''
+'''-------------------------------------------------------------'''
+Delta, F = solve_stiffness_system( K, bcs )
+
+node_idx = 0
+print( f'Disp/rotations at Node { node_idx }:', Delta[node_idx * 6: node_idx * 6 + 6] )
+print( f'Reactions at Node { node_idx }:', F[node_idx * 6: node_idx * 6 + 6] )
+
+node_idx = 1
+print( f'Disp/rotations at Node { node_idx }:', Delta[node_idx * 6: node_idx * 6 + 6] )
+print( f'Reactions at Node { node_idx }:', F[node_idx * 6: node_idx * 6 + 6] )
+
+'''-------------------------------------------------------------'''
+'''-------------------Critical Loads----------------------'''
+'''-------------------------------------------------------------'''
+
+K_g = stiffmat.get_global_geometric_stiffmatrix( Delta )
+
+P_cr, eigenvectors_allstructure = compute_critical_load(K, K_g, bcs)
+print( 'critical', P_cr )
+
+'''-------------------------------------------------------------'''
+'''-------------------Interpolation----------------------'''
+'''-------------------------------------------------------------'''
+n , scale = 20, 10
+shapefunctions = ShapeFunctions(eigenvectors_allstructure, frame, n=n, scale=scale)
+saving_dir_with_name = 'Original Configuration vs Interpolated.png'
+shapefunctions.plot_element_interpolation( saving_dir_with_name )
 ```
 
 
