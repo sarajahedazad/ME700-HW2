@@ -69,13 +69,10 @@ To solve for unknown displacements at the free nodes, the stiffness matrix $K$ i
 
 For stability analysis, the focus shifts to the geometric stiffness matrix $K_g$ and its role in determining the buckling load of the structure.
 
-- **Geometric Stiffness Matrix ($K_g$)**: This matrix accounts for the effects of preloading on the structure. It captures the stiffness changes due to the applied loads and is defined as:
-
-  
-  $K_g = \sum \frac{N}{L} \begin{bmatrix} 1 & 0 & -1 & 0 \\ 0 & 0 & 0 & 0 \\ -1 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 \end{bmatrix}$
+- **Geometric Stiffness Matrix ($K_g$)**: This matrix accounts for the effects of preloading on the structure. It captures the stiffness changes due to the applied loads.
   
 
-  where $N$ is the axial force in the member and $L$ is the length of the member.
+
 
 - **Elastic Critical Load and Eigenvalue Analysis**: The critical load is determined using eigenvalue analysis of the combined stiffness matrix $K + \lambda K_g$, where $\lambda$ represents a load factor. The smallest eigenvalue from this analysis gives the critical load factor, indicating the load level at which the structure is likely to buckle.
 
