@@ -47,9 +47,9 @@ The Direct Stiffness Method (DSM) is a fundamental approach in structural analys
 
 - **Elastic Stiffness Matrix ($K$)**: This matrix represents the rigidity of the structure and is assembled from individual element stiffness matrices. The transformation matrices are used to align local degrees of freedom with the global system. The general form of the stiffness matrix for an element in the global coordinate system can be expressed as:
 
-  $$
-  K_{global} = T^T K_{local} T
-  $$
+  
+  $K_{global} = T^T K_{local} T$
+  
 
   where $T$ is the transformation matrix, $K_{local}$ is the element's stiffness matrix in its local coordinates, and $T^T$ denotes the transpose of $T$.
 
@@ -59,9 +59,9 @@ The Direct Stiffness Method (DSM) is a fundamental approach in structural analys
 
 The relationship between these components is captured by the matrix equation:
 
-$$
-K\Delta = F
-$$
+
+$K\Delta = F$
+
 
 To solve for unknown displacements at the free nodes, the stiffness matrix $K$ is partitioned into submatrices corresponding to the supported and free nodes, leading to a system that can be rearranged to isolate and solve for the unknown displacements.
 
@@ -71,9 +71,9 @@ For stability analysis, the focus shifts to the geometric stiffness matrix $K_g$
 
 - **Geometric Stiffness Matrix ($K_g$)**: This matrix accounts for the effects of preloading on the structure. It captures the stiffness changes due to the applied loads and is defined as:
 
-  $$
-  K_g = \sum \frac{N}{L} \begin{bmatrix} 1 & 0 & -1 & 0 \\ 0 & 0 & 0 & 0 \\ -1 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 \end{bmatrix}
-  $$
+  
+  $K_g = \sum \frac{N}{L} \begin{bmatrix} 1 & 0 & -1 & 0 \\ 0 & 0 & 0 & 0 \\ -1 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 \end{bmatrix}$
+  
 
   where $N$ is the axial force in the member and $L$ is the length of the member.
 
