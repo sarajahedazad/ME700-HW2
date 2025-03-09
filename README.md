@@ -135,39 +135,29 @@ Below is an example that demonstrates how to use the codes in src without instal
 - Step 3: Run your code and enjoy!
 Here is an example that demonstrates how you can use the files in `src` folder (they should be in the same folder as the python file that you intend to run):
 
+**How to import modules**
 ```
 import numpy as np
 from geometry import *
 from boundary_conditions import *
 from stiffness_matrices import *
 from solver import *
-from shape_functions import * 
-'''-------------------------------------------------------------'''
-'''------------------Defining The Structure---------------------'''
-'''-------------------------------------------------------------'''
-#------Parameters-------
-r = 1
-E = 1000
-nu = 0.3
-A = np.pi * r **2
-Iy = np.pi * r ** 4 / 4
-Iz = np.pi * r ** 4 / 4
-I_rho = np.pi * r ** 4 / 2
-J = np.pi * r ** 4 / 2
-L = 10 
-P_applied = 1
+from shape_functions import *
+```
 
-#-----Building the Frame-----
+
+**How to define a structure**
+```
 frame = Frame()
 p0 = frame.add_point(0, 0, 0)
 p1 = frame.add_point(30, 40, 0)
 
-el0 = frame.add_element( p0, p1, E, nu, A, Iy, Iz, I_rho, J )
+el0 = frame.add_element( p0, p1, E, nu, A, Iy, Iz, I_rho, J, v_temp )
 element_lst = [el0]
 frame.build_frame( element_lst )
-'''-------------------------------------------------------------'''
-'''-------------------Boundary Conditions-----------------------'''
-'''-------------------------------------------------------------'''
+```
+**How to define Boundary Conditions**    
+```
 bcs = BoundaryConditions( frame )
 # displacement bounds
 bcs.add_disp_bound_xyz( [0, 0, 0], 0, 0, 0 ) # you can also use bcs.add_disp_bound_xyz( [p0.coords, 0, 0, 0 ) 
@@ -176,24 +166,23 @@ bcs.add_disp_bound_xyz( [0, 0, 0], 0, 0, 0 ) # you can also use bcs.add_disp_bou
 bcs.add_rot_bound_xyz( [0, 0, 0], 0, 0, 0 )
 
 # force bounds
-bcs.add_force_bound_xyz( [30, 40, 0], - 3 /5 , -4/5, 0 )
+bcs.add_force_bound_xyz( [30, 40, 0], Fx , -4/5, 0 )
 
 # momentum bounds
 bcs.add_momentum_bound_xyz( [30, 40, 0], 0, 0, 0 )
 
 # we have to set up the bounds in the end
 bcs.set_up_bounds()
+```
 
-'''-------------------------------------------------------------'''
-'''-----------Build the Global Stiffness Matrix-----------------'''
-'''-------------------------------------------------------------'''
+**How to build a stiffness matrix** 
+```
 stiffmat = StiffnessMatrices( frame )
 K = stiffmat.get_global_elastic_stiffmatrix()
+```
 
-
-'''-------------------------------------------------------------'''
-'''-------------------Solving for unknowns----------------------'''
-'''-------------------------------------------------------------'''
+**Solving for unknown displacements/rotations, and forces/momentums.**
+```
 Delta, F = solve_stiffness_system( K, bcs )
 
 node_idx = 0
@@ -203,15 +192,18 @@ print( f'Reactions at Node { node_idx }:', F[node_idx * 6: node_idx * 6 + 6] )
 node_idx = 1
 print( f'Disp/rotations at Node { node_idx }:', Delta[node_idx * 6: node_idx * 6 + 6] )
 print( f'Reactions at Node { node_idx }:', F[node_idx * 6: node_idx * 6 + 6] )
+```
 
-'''-------------------------------------------------------------'''
-'''-------------------Critical Loads----------------------'''
-'''-------------------------------------------------------------'''
+**Finding the geometric stiffness matrix**
 
+```
 K_g = stiffmat.get_global_geometric_stiffmatrix( Delta )
 
 P_cr, eigenvectors_allstructure = compute_critical_load(K, K_g, bcs)
 print( 'critical', P_cr )
+```
+
+
 
 '''-------------------------------------------------------------'''
 '''-------------------Interpolation----------------------'''
@@ -223,5 +215,5 @@ shapefunctions.plot_element_interpolation( saving_dir_with_name )
 ```
 
 
-* [Lejeune Lab Graduate Course Materials: Bisection-Method](https://github.com/Lejeune-Lab-Graduate-Course-Materials/bisection-method/tree/main) 
-* ChatGPT: was used for completing the documentation. More details about the AI use is provided in the `assignment_1_genAIuse.txt`.
+* [Lejeune Lab Graduate Course Materials: Bisection-Method](https://github.com/Lejeune-Lab-Graduate-Course-Materials/bisection-method/tree/main)
+* ChatGPT: was used for completing the documentation. More details about the AI use is provided in the `assignment_2_genAIuse.txt`.
