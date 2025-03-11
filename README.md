@@ -192,6 +192,7 @@ K = stiffmat.get_global_elastic_stiffmatrix()
 ```
 Delta, F = solve_stiffness_system( K, bcs )
 
+# How to get to displacements/rotations, and forces/momentums of a node
 node_idx = 0
 print( f'Disp/rotations at Node { node_idx }:', Delta[node_idx * 6: node_idx * 6 + 6] )
 print( f'Reactions at Node { node_idx }:', F[node_idx * 6: node_idx * 6 + 6] )
