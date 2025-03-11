@@ -149,30 +149,37 @@ from shape_functions import *
 **How to define a structure**
 ```
 frame = Frame()
-p0 = frame.add_point(0, 0, 0)
-p1 = frame.add_point(30, 40, 0)
+p0 = frame.add_point(x0, y0, z0) # Defining a point
+p1 = frame.add_point(x1, y1, z1)
 
-el0 = frame.add_element( p0, p1, E, nu, A, Iy, Iz, I_rho, J, v_temp )
-element_lst = [el0]
-frame.build_frame( element_lst )
+el0 = frame.add_element( p0, p1, E, nu, A, Iy, Iz, I_rho, J, v_temp ) # defining an element
+# p0: point object 0, p1: point object 0, E: Young's modulus, nu: Poisson's ratio  
+# A: area, Iy: moment of inertia about the y-axis, Iz: moment of inertia about the z-axis   
+# I_rho: polar moment of inertia, J: , v_temp: local z axis
+element_lst = [el0] 
+frame.build_frame( element_lst ) # Required for building a frame structure
 ```
 **How to define Boundary Conditions**    
 ```
 bcs = BoundaryConditions( frame )
 # displacement bounds
-bcs.add_disp_bound_xyz( [0, 0, 0], 0, 0, 0 ) # you can also use bcs.add_disp_bound_xyz( [p0.coords, 0, 0, 0 ) 
+bcs.add_disp_bound_xyz( [x0, y0, z0], disp_bound_x, disp_bound_y, disp_bound_z ) # you can also use bcs.add_disp_bound_xyz( p0.coords, disp_bound_x, disp_bound_y, disp_bound_z ) 
 
 # rotation bounds
-bcs.add_rot_bound_xyz( [0, 0, 0], 0, 0, 0 )
+bcs.add_rot_bound_xyz( [x0, y0, z0], rot_bound_x, rot_bound_y, rot_bound_z )
 
 # force bounds
-bcs.add_force_bound_xyz( [30, 40, 0], Fx , -4/5, 0 )
+bcs.add_force_bound_xyz( [x1, y1, z1], force_bound_x, force_bound_y, force_bound_z )
 
 # momentum bounds
-bcs.add_momentum_bound_xyz( [30, 40, 0], 0, 0, 0 )
+bcs.add_momentum_bound_xyz( [x1, y1, z1], momentum_bound_x, momentum_bound_y, momentum_bound_z )
 
-# we have to set up the bounds in the end
+# we have to set up the bounds in the end. This step is required.
 bcs.set_up_bounds()
+```  
+Note: If you need to bound only one axis, you can do it like this:    
+```
+bcs.add_force_bound_x( [x0, y0, z0], force_bound_x )
 ```
 
 **How to build a stiffness matrix** 
