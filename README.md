@@ -135,6 +135,7 @@ Below is an example that demonstrates how to use the codes in src without instal
 Here is an example that demonstrates how you can use the files in `src` folder (they should be in the same folder as the python file that you intend to run):
 
 ## How to Use The Codes <a name="htu"></a>
+To see more examples, see `tutorials_matrix_structural_analysis.ipynb` [here](https://github.com/sarajahedazad/ME700-HW2/tree/main/tutorials).
 **How to import modules**
 ```
 import numpy as np
