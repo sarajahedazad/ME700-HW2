@@ -11,11 +11,10 @@ The repository’s primary codes are located in **src**.
 ## Table of Contents
 
 - [Course Information](#course-information)
-- [Assignment Overview](#assignment-overview)
+- [Problem Overview](#problem)
 - [Theory](#theory)
-  - [sth](#sth)
-- [Installation and Environment Setup](#installation-and-environment-setup)
-- [Tutorials and Testing](#tutorials-and-testing)
+- [Conda Environment, Installation, and Testing](#install)
+- [How to Use The Codes](#htu)
 - [References](#references)
 
 ---
@@ -28,7 +27,7 @@ This course is offered at Boston University and, for Spring 2025, will be taught
 Each semester, the course may cover different topics, and the assignments are designed to blend theoretical insights with practical coding and testing practices.
 
 ---
-## Problem Overview   
+## Problem Overview  <a name="problem"></a>
 This project aims to create a robust matrix structural analysis tool specifically designed for analyzing 3D frames using the Direct Stiffness Method (DSM). The solver offers comprehensive functionality to address complex structural analysis challenges, making it an essential resource for understanding and predicting the behavior of frame structures under various loading conditions. Its design focuses on providing detailed insights into structural mechanics, facilitating effective analysis and decision-making in complex engineering projects.   
 **Part 1: Direct Stiffness Method Implementation**  
 The first part of the project involves implementing a DSM solver that accurately predicts the structural behavior of 3D frames under various loading conditions. The solver will require inputs such as frame geometry, including node locations and element connectivity, element section properties (modulus of elasticity, Poisson's ratio, cross-sectional area, and moments of inertia), applied nodal loads (forces and moments), and boundary conditions (constraints on displacements and rotations at specific nodes). The output from this part of the solver will include detailed displacements and rotations at each node and the reaction forces and moments at supported nodes. This section also includes the creation of a detailed tutorial guiding users through the process of setting up a frame, analyzing it with the solver, and understanding the results.
@@ -84,7 +83,7 @@ This detailed theoretical framework supports the functionalities developed in th
 
 ---
 
-### Conda environment, install, and testing <a name="install"></a>
+### Conda Environment, Installation, and Testing <a name="install"></a>
 _This section is copied and pasted from [Lejeune's Lab Graduate Course Materials: Bisection Method](https://github.com/Lejeune-Lab-Graduate-Course-Materials/bisection-method.git)_
 
 To install this package, please begin by setting up a conda environment (mamba also works):
@@ -117,7 +116,7 @@ Code coverage should be 100%. Now you are prepared to write your own code based 
 
 If you are using VSCode to run this code, don't forget to set VSCode virtual environment to hw2-env.
 
-If you would like the open one of the tutorials located in the `tutorials` folder ( for example, `tutorial_elastoplasticity.ipynb`) as a Jupyter notebook in the browser, you might need to install Jupyter notebook in your conda environment as well:
+If you would like the open the tutorials located in the `tutorials` folder ( the `.ipynb` file ) as a Jupyter notebook in the browser, you might need to install Jupyter notebook in your conda environment as well:
 ```bash
 pip install jupyter
 ```
@@ -135,6 +134,7 @@ Below is an example that demonstrates how to use the codes in src without instal
 - Step 3: Run your code and enjoy!
 Here is an example that demonstrates how you can use the files in `src` folder (they should be in the same folder as the python file that you intend to run):
 
+## How to Use The Codes <a name="htu"></a>
 **How to import modules**
 ```
 import numpy as np
@@ -144,7 +144,6 @@ from stiffness_matrices import *
 from solver import *
 from shape_functions import *
 ```
-
 
 **How to define a structure**
 ```
@@ -217,6 +216,6 @@ saving_dir_with_name = 'Original Configuration vs Interpolated.png'
 shapefunctions.plot_element_interpolation( saving_dir_with_name )
 ```
 
-
+## References
 * [Lejeune Lab Graduate Course Materials: Bisection-Method](https://github.com/Lejeune-Lab-Graduate-Course-Materials/bisection-method/tree/main)
 * ChatGPT: was used for completing the documentation. More details about the AI use is provided in the `assignment_2_genAIuse.txt`.
