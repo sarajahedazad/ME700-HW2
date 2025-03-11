@@ -163,7 +163,7 @@ class BoundaryConditions:
 
     def set_up_bounds( self ):
         '''known supported indices'''
-        BCs_supported_indices = np.concatenate( (  self.BCs_disp_indices,  self.BCs_rot_indices ) ) 
+        BCs_supported_indices = np.concatenate( (  self.BCs_disp_indices,  self.BCs_rot_indices ) ).astype(int) 
         BCs_Delta_supported_values = np.concatenate( ( self.BCs_disp_values, self.BCs_rot_values ) )
 
         # Get the order of indices that would sort array a
@@ -174,7 +174,7 @@ class BoundaryConditions:
 
         '''known free indices'''
         BCs_free_indices = np.concatenate( (  self.BCs_force_indices,  self.BCs_momentum_indices ) ).astype(int) 
-        BCs_F_free_values = np.concatenate( ( self.BCs_force_values, self.BCs_momentum_values ) ).astype(int)
+        BCs_F_free_values = np.concatenate( ( self.BCs_force_values, self.BCs_momentum_values ) )
 
         # Get the order of indices that would sort array a
         order = np.argsort( BCs_free_indices )
