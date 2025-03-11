@@ -187,7 +187,7 @@ stiffmat = StiffnessMatrices( frame )
 K = stiffmat.get_global_elastic_stiffmatrix()
 ```
 
-**Solving for unknown displacements/rotations, and forces/momentums.**
+**Solving for unknown displacements/rotations, and forces/momentums**
 ```
 Delta, F = solve_stiffness_system( K, bcs )
 
@@ -200,7 +200,7 @@ print( f'Disp/rotations at Node { node_idx }:', Delta[node_idx * 6: node_idx * 6
 print( f'Reactions at Node { node_idx }:', F[node_idx * 6: node_idx * 6 + 6] )
 ```
 
-**Finding the geometric stiffness matrix**
+**Building the geometric stiffness matrix and finding the critical load**
 
 ```
 K_g = stiffmat.get_global_geometric_stiffmatrix( Delta )
@@ -208,7 +208,7 @@ K_g = stiffmat.get_global_geometric_stiffmatrix( Delta )
 P_cr, eigenvectors_allstructure = compute_critical_load(K, K_g, bcs)
 print( 'critical', P_cr )
 ```
-**Saving the Interpolated Configuration of the Structure**
+**Saving the interpolated configuration of the structure**
 ```
 n , scale = 20, 10
 shapefunctions = ShapeFunctions(eigenvectors_allstructure, frame, n=n, scale=scale)
