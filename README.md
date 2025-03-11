@@ -202,12 +202,8 @@ K_g = stiffmat.get_global_geometric_stiffmatrix( Delta )
 P_cr, eigenvectors_allstructure = compute_critical_load(K, K_g, bcs)
 print( 'critical', P_cr )
 ```
-
-
-
-'''-------------------------------------------------------------'''
-'''-------------------Interpolation----------------------'''
-'''-------------------------------------------------------------'''
+**Saving the Interpolated Configuration of the Structure**
+```
 n , scale = 20, 10
 shapefunctions = ShapeFunctions(eigenvectors_allstructure, frame, n=n, scale=scale)
 saving_dir_with_name = 'Original Configuration vs Interpolated.png'
